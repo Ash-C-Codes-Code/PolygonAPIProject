@@ -1,5 +1,6 @@
 from polygon import RESTClient
 import datetime
+import json
 
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
@@ -67,7 +68,14 @@ def getData():
 
     # List Aggregates (Bars)
     aggs = []
-    for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="minute", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
+    for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
+        print(a)
+        print("High: " + str(a.high))
+        print("Low: " + str(a.low))
+        print("Open: " + str(a.open))
+        print("Close: " + str(a.close))
+        print(a.timestamp)
+        print("Timestamp: " + datetime.fromtimestamp(a.timestamp))
         aggs.append(a)
 
     print(aggs)
@@ -92,6 +100,9 @@ def main():
         getInputs()
     else:
         getData()
+        main()
+
+    #[Agg(open=196.235, high=196.73, low=195.28, close=195.605, volume=35281426.0, vwap=195.8486, timestamp=1690862400000, transactions=477616, otc=None), Agg(open=195.04, high=195.18, low=191.8507, close=192.58, volume=50388811.0, vwap=192.9395, timestamp=1690948800000, transactions=620582, otc=None)]
 
 
 main()
