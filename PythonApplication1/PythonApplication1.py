@@ -74,8 +74,7 @@ def getData():
         print("Low: " + str(a.low))
         print("Open: " + str(a.open))
         print("Close: " + str(a.close))
-        print(a.timestamp)
-        print("Timestamp: " + datetime.fromtimestamp(a.timestamp))
+        print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
         aggs.append(a)
 
     print(aggs)
