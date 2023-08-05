@@ -5,6 +5,13 @@ import json
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
 
+class dailyData:
+    high: 0
+    low: 100000
+    open: 0
+    close: 0
+    timestamp: 0
+
 # start off by setting todays date as the start/end date.
 startDateInput = datetime.datetime.now()
 endDateInput = datetime.datetime.now()
@@ -68,16 +75,26 @@ def getData():
 
     # List Aggregates (Bars)
     aggs = []
+    highest = dailyData()
+    highest.high = 0
+    lowest = dailyData()
+    lowest.low = 100000
     for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
         print(a)
-        print("High: " + str(a.high))
-        print("Low: " + str(a.low))
-        print("Open: " + str(a.open))
-        print("Close: " + str(a.close))
-        print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
+        #print("High: " + str(a.high))
+        #print("Low: " + str(a.low))
+        #print("Open: " + str(a.open))
+        #print("Close: " + str(a.close))
+        #print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
         aggs.append(a)
+        if (a.high > highest.high):
+            highest = a
+        if (a.low < lowest.low):
+            lowest = a
 
-    print(aggs)
+    #print(aggs)
+    print("Highest: " + str(highest.high) + ", on " + datetime.datetime.fromtimestamp(highest.timestamp/1000).strftime("%d/%m/%Y"))
+    print("Lowest: " + str(lowest.low) + ", on " + datetime.datetime.fromtimestamp(lowest.timestamp/1000).strftime("%d/%m/%Y"))
 
 #
 def main():
@@ -100,8 +117,6 @@ def main():
     else:
         getData()
         main()
-
-    #[Agg(open=196.235, high=196.73, low=195.28, close=195.605, volume=35281426.0, vwap=195.8486, timestamp=1690862400000, transactions=477616, otc=None), Agg(open=195.04, high=195.18, low=191.8507, close=192.58, volume=50388811.0, vwap=192.9395, timestamp=1690948800000, transactions=620582, otc=None)]
 
 
 main()
