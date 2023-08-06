@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonApplication1", "PythonApplication1\PythonApplication1.pyproj", "{20D19D1C-B6AE-467A-8081-B44C25667B3C}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Trade Calculator", "PythonApplication1\Trade Calculator.pyproj", "{20D19D1C-B6AE-467A-8081-B44C25667B3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
