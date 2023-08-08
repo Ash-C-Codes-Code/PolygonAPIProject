@@ -6,6 +6,9 @@ CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
 
 class dailyData:
+    """
+    Class that is identical to the object returned by the API call
+    """
     high: 0
     low: 100000
     open: 0
@@ -70,6 +73,10 @@ def getInputs():
             exit()
 
 def getData():
+    """
+    Handles the API call.
+    Calculate the highest and lowest values between the date inputs
+    """
     global startDateInput
     global endDateInput
 
@@ -85,6 +92,7 @@ def getData():
         #print("Low: " + str(a.low))
         #print("Open: " + str(a.open))
         #print("Close: " + str(a.close))
+        #timestamp must be divided by 1000 to be able to be converted to a datetime object
         #print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
         aggs.append(a)
         if (a.high > highest.high):
@@ -92,29 +100,59 @@ def getData():
         if (a.low < lowest.low):
             lowest = a
 
-    #print(aggs)
     print("Highest: " + str(highest.high) + ", on " + datetime.datetime.fromtimestamp(highest.timestamp/1000).strftime("%d/%m/%Y"))
     print("Lowest: " + str(lowest.low) + ", on " + datetime.datetime.fromtimestamp(lowest.timestamp/1000).strftime("%d/%m/%Y"))
     calculateData(aggs)
 
 def sortByTimestamp(a):
-    print(a)
-    print(str(a.timestamp))
+    """
+    Returns the time stamp of the days values
+    Used for sorting
+
+    """
     return a.timestamp
 
 def calculateData(data):
-    #data = numpy.array(data, [("open", float), ("high", float), ("low", float), ("close", float), ("volume", float), ("vwap", float), ("timestamp", int), ("transactions", int), ("oct", "S10")])
-    #print(data)
+    """
+    Calculates the average of each day
+
+    """
+    #Calculate the averages
     data.sort(key=sortByTimestamp)
-    #print(data)
     averages = []
     for point in data:
+        #Calculate the average by finding the middle value between the highest and lowest points in a day
         difference = point.high - point.low
         print("High: " + str(point.high) + ", Low: " + str(point.low))
-        average = point.low + (difference / 2)
+        average = round(point.low + (difference / 2), 2)
         print("Average: " + str(average))
         averages.append(average)
     print(averages)
+    #Do the averages show to be increasing or decreasing
+    #If an increase of 4%-15% then increasing, if increasing by 15% or more strongly increasing
+    #If an decrease of 4%-15% then decreasing, if decreasing by 15% or more strongly decreasing
+    #If increasing/decreasing within 4% then it is stable
+    increased = "increasing"
+    calculation = averages[-1] - averages[0]
+    percentageAmount = 0
+    if (calculation >= 0):
+        percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 0)
+        print("Interest: " + str(percentageAmount - 100) + "%")
+    else:
+        percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 0)
+        print("Decrease: " + str(percentageAmount - 100) + "%")
+        increased = "decreasing"
+
+    if (percentageAmount <= 4):
+        print("Stock is stable at " + str(percentageAmount - 100) + "% " + increased)
+    else:
+        strongChange = ""
+        if (percentageAmount >= 15):
+            strongChange = "Strongly "
+        print("Stock has been " + strongChange + increased + " with a rate of " + str(percentageAmount - 100) + "%")
+
+    #Percentage different between each average
+
 
 
 
