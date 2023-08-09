@@ -136,10 +136,10 @@ def calculateData(data):
     calculation = averages[-1] - averages[0]
     percentageAmount = 0
     if (calculation >= 0):
-        percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 0)
+        percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 2)
         print("Interest: " + str(percentageAmount - 100) + "%")
     else:
-        percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 0)
+        percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 2)
         print("Decrease: " + str(percentageAmount - 100) + "%")
         increased = "decreasing"
 
@@ -149,10 +149,28 @@ def calculateData(data):
         strongChange = ""
         if (percentageAmount >= 15):
             strongChange = "Strongly "
+
         print("Stock has been " + strongChange + increased + " with a rate of " + str(percentageAmount - 100) + "%")
-
-    #Percentage different between each average
-
+    #Percentage difference between each average
+    index = 0
+    print("Length of Averages " + str(len(averages)))
+    if (len(averages) >= 2):
+        for a in averages:
+            if (index < len(averages) - 1):
+                difference = averages[index + 1] - a
+                startDate = datetime.datetime.fromtimestamp(data[index].timestamp/1000).strftime("%d/%m/%Y")
+                endDate = datetime.datetime.fromtimestamp(data[index + 1].timestamp/1000).strftime("%d/%m/%Y")
+                if (difference > 0):
+                    percentageAmount = round((a + difference) / a, 2) * 100
+                    print("Increase of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
+                elif (difference < 0):
+                    percentageAmount = round((a + difference * -1) / a, 2) * 100
+                    print("Decrease of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
+                else:
+                    print("No Changes between " + startDate)
+                index += 1
+    else:
+        print("Dates given can not allow a calculation of averages")
 
 
 
