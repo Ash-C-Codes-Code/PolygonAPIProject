@@ -198,7 +198,16 @@ def calculateData():
         main()
 
 def selling():
-    print("Yet to be implemented...")
+    arr = []
+    preNow = datetime.datetime.now()
+    now = datetime.datetime.now()
+    print(preNow)
+    print(now)
+    userTicker = print("Enter the Stock name code:")
+    if (userTicker != ""):
+        for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=preNow, to=now, limit=50000):
+            arr.push(a)
+    print("Price at this moment: " + a[0])
     main()
 
 def buying():
@@ -206,9 +215,9 @@ def buying():
     main()
 
 def main():
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
-    print("|-----------------------------------------TRADE CALCULATOR-----------------------------------------|")
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
+    print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
     print("1: Show Trends")
     print("2: Selling")
     print("3: Buying")
