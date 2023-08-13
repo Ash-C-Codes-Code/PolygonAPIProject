@@ -176,7 +176,7 @@ def calculateData(data):
 
 
 #
-def main():
+def calculateData():
     """
     Get the user inputs and then confirm with the user.
     They can then choose to input again.
@@ -195,5 +195,33 @@ def main():
         getInputs()
     else:
         getData()
+        main()
+
+def selling():
+    print("Yet to be implemented...")
+    main()
+
+def buying():
+    print("Yet to be implemented....")
+    main()
+
+def main():
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
+    print("|-----------------------------------------TRADE CALCULATOR-----------------------------------------|")
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
+    print("1: Show Trends")
+    print("2: Selling")
+    print("3: Buying")
+    print("4: Exit")
+    choice = input("\nEnter the number option depending on what action you want to carry out:")
+    match choice:
+        case "1":
+            calculateData()
+        case "2":
+            selling()
+        case "3":
+            buying()
+        case "4":
+            exit()
 
 main()
