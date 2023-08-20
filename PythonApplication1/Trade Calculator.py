@@ -198,17 +198,43 @@ def calculateData():
         main()
 
 def selling():
-    arr = []
-    preNow = datetime.datetime.now()
-    now = datetime.datetime.now()
-    print(preNow)
-    print(now)
-    userTicker = print("Enter the Stock name code:")
-    if (userTicker != ""):
-        for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=preNow, to=now, limit=50000):
-            arr.push(a)
-    print("Price at this moment: " + a[0])
-    main()
+    aggs = []
+    #preNow = datetime.datetime.now()
+    #now = datetime.datetime.now()
+    #print(preNow)
+    #print(now)
+    #print(preNow.strftime("%Y-%m-%d"))
+    #print(now.strftime("%Y-%m-%d"))
+    errored = True
+    index = 0
+    latestDate = datetime.datetime.now()
+
+    ## Do a for each loop where we do a try catch around this for each loop, increasing the number of days that we are taking away from now until the for each succeeds
+    while (errored):
+        if index != 0:
+            latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
+        try:
+            print(latestDate.strftime("%Y-%m-%d"))
+            for a in CLIENT.list_aggs(ticker=ticker, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=50000):
+                print(a)
+                aggs.append(a)
+            errored = False
+        except:
+            errored = True
+            index += 1
+
+    #! Wont work because can only make a api call per minute
+    # get the latest weeks results, to find the date of the last value
+    #latestDate = datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y")
+    #print(latestDate)
+    #for a in CLIENT.list_aggs(ticker=ticker, multiplier=5, timespan="minute", from_=latestDate, to=latestDate, limit=50000):
+    #    print(a)
+    #userTicker = print("Enter the Stock name code:")
+    #if (userTicker != ""):
+    #    for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=preNow.strftime("%Y-%m-%d"), to=now.strftime("%Y-%m-%d"), limit=120):
+    #        aggs.append(a)
+    #print("Price at this moment: " + a[0])
+    #main()
 
 def buying():
     print("Yet to be implemented....")
