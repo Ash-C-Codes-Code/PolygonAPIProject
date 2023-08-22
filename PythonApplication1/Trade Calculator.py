@@ -215,13 +215,18 @@ def selling():
             latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
         try:
             print(latestDate.strftime("%Y-%m-%d"))
-            for a in CLIENT.list_aggs(ticker=ticker, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=50000):
+            for a in CLIENT.list_aggs(ticker=ticker, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=5000):
                 print(a)
+                print("Time: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"))
                 aggs.append(a)
             errored = False
         except:
             errored = True
             index += 1
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    hasStock = input("Do you want to sell? (Y/N) ")
+    if (hasStock == "Y"):
+        stockAmount = input("How much stock in Units do you want to sell? ")
 
     #! Wont work because can only make a api call per minute
     # get the latest weeks results, to find the date of the last value
