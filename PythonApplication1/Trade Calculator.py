@@ -238,11 +238,15 @@ def selling():
         stockAmount = input("How much stock (in Units) do you have?")
         sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock?")
         difference = aggs[-1].high - aggs[-1].low
+        sellValue = round(aggs[-1].low + (difference / 2), 2)
         if (sellAmount.upper() == "ALL"):
-            print("Amount recieved after selling: £" + str(round(round(aggs[-1].low + (difference / 2), 2) * stockAmount, 2)))
+            print("Amount recieved after selling: " + round(sellValue * stockAmount, 2))
             print("Amount of units left after selling: " + str(stockAmount - sellAmount) + " Units")
         else:
-            print("Amount recieved after selling: £" + str(round(round(aggs[-1].low + (difference / 2), 2) * sellAmount, 2)))
+            print("Amount recieved after selling: " + round(sellValue * sellAmount, 2))
+        main()
+    else:
+        main()
 
     #! Wont work because can only make a api call per minute
     # get the latest weeks results, to find the date of the last value
