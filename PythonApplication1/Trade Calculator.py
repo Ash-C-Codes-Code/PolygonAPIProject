@@ -214,7 +214,7 @@ def selling():
     while (notConfirmed):
         stockToSell = input("Enter the code for the stock you want to sell: ")
         if (stockToSell != ""):
-            confirmationDecision = input("Are you sure you want to sell " + stockToSell + " stock? (Y/N)")
+            confirmationDecision = input("Are you sure you want to sell " + stockToSell + " stock? (Y/N) ")
             if (confirmationDecision == "Y"):
                 notConfirmed = False
 
@@ -235,15 +235,18 @@ def selling():
     print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
     hasStock = input("Do you want to sell? (Y/N) ")
     if (hasStock == "Y"):
-        stockAmount = input("How much stock (in Units) do you have?")
-        sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock?")
+        stockAmount = input("How much stock (in Units) do you have? ")
+        sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock? ")
         difference = aggs[-1].high - aggs[-1].low
         sellValue = round(aggs[-1].low + (difference / 2), 2)
-        if (sellAmount.upper() == "ALL"):
-            print("Amount recieved after selling: " + round(sellValue * stockAmount, 2))
-            print("Amount of units left after selling: " + str(stockAmount - sellAmount) + " Units")
+        if (sellAmount.upper() == 'ALL'):
+            print("All selected")
+            print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)))
         else:
-            print("Amount recieved after selling: " + round(sellValue * sellAmount, 2))
+            print("All not selected")
+            print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)))
+            print("Amount of units left after selling: " + str(float(stockAmount) - float(sellAmount)) + " Units")
+
         main()
     else:
         main()
@@ -273,7 +276,7 @@ def main():
     print("2: Selling")
     print("3: Buying")
     print("4: Exit")
-    choice = input("\nEnter the number option depending on what action you want to carry out:")
+    choice = input("\nEnter the number option depending on what action you want to carry out: ")
     match choice:
         case "1":
             calculateData()
