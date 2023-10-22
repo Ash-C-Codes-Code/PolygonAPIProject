@@ -1,9 +1,12 @@
+from token import NUMBER
 from polygon import RESTClient
+from currency_converter import CurrencyConverter
 import datetime
 import numpy
 
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
+c = CurrencyConverter()
 
 class dailyData:
     """
@@ -86,7 +89,17 @@ def getData():
     highest.high = 0
     lowest = dailyData()
     lowest.low = 100000
-    for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
+    notConfirmed = True
+    stockToSell = "AAPL"
+
+    while (notConfirmed):
+        stockToSell = input("Enter the code for the stock you want to check: ")
+        if (stockToSell != ""):
+            confirmationDecision = input("Are you sure you want to check " + stockToSell + " stock? (Y/N) ")
+            if (confirmationDecision == "Y"):
+                notConfirmed = False
+
+    for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
         print(a)
         #print("High: " + str(a.high))
         #print("Low: " + str(a.low))
@@ -137,17 +150,17 @@ def calculateData(data):
     percentageAmount = 0
     if (calculation >= 0):
         percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 2)
-        print("Interest: " + str(percentageAmount - 100) + "%")
+        print("Increase: " + str(percentageAmount - 100) + "%")
     else:
         percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 2)
         print("Decrease: " + str(percentageAmount - 100) + "%")
         increased = "decreasing"
 
-    if (percentageAmount <= 4):
+    if ((percentageAmount-100) <= 4):
         print("Stock is stable at " + str(percentageAmount - 100) + "% " + increased)
     else:
         strongChange = ""
-        if (percentageAmount >= 15):
+        if ((percentageAmount-100) >= 15):
             strongChange = "Strongly "
 
         print("Stock has been " + strongChange + increased + " with a rate of " + str(percentageAmount - 100) + "%")
@@ -232,24 +245,74 @@ def selling():
         except:
             errored = True
             index += 1
-    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + "p at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
     hasStock = input("Do you want to sell? (Y/N) ")
     if (hasStock == "Y"):
+        amountToGain = 0
         stockAmount = input("How much stock (in Units) do you have? ")
         sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock? ")
         difference = aggs[-1].high - aggs[-1].low
         sellValue = round(aggs[-1].low + (difference / 2), 2)
         if (sellAmount.upper() == 'ALL'):
             print("All selected")
-            print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)))
+            print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)) + "(GBP)")
+            amountToGain = round(sellValue * float(stockAmount), 2)
         else:
             print("All not selected")
-            print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)))
+            print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)) + "(GBP)")
             print("Amount of units left after selling: " + str(float(stockAmount) - float(sellAmount)) + " Units")
-
+            amountToGain = round(sellValue * float(sellAmount), 2)
+    
+        convertLoop = True;
+        while (convertLoop):
+            doConvert = input("Would you like to convert the amount into a different currency? (Y/N)");
+            if (doConvert == "Y"):
+                convertedAmount = convertToCurrency(amountToGain);
+                if (convertedAmount == "Invalid currency code"):
+                    print ("Could not convert, due to invalid currency code");
+                elif (convertedAmount == "Could not find the date of the last currency conversion"):
+                    print("Could not convert, due to the invalid currency conversion");
+                else:
+                    print("After conversion: " + convertedAmount + " .");
+                    convertLoop = False;
+            elif (doConvert == "N"):
+                convertLoop = False;
         main()
     else:
         main()
+
+
+
+   
+        
+        
+def convertToCurrency(amountToGain):
+    """
+    Asks the user what currency they want to convert to                
+    Converts to that currency using API to get current values and returns                
+    """                
+    userCurrencyCode = input("Please enter the three letter currency code: ");                
+    userCurrencyCode = userCurrencyCode.upper();                
+    if (userCurrencyCode in c.currencies):
+        errored = True
+        index = 0;
+        while(errored):
+            if (index != 0):
+                latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
+            else:
+                latestDate = datetime.datetime.now()
+            try:
+                convertedAmount = c.convert(amountToGain, 'GBP', userCurrencyCode, date = latestDate.strftime("%Y-%m-%d"));
+                errored = False;
+                return str(convertedAmount) + " In " + userCurrencyCode;
+            except:
+                errored = True
+                index += 1;
+        return "Could not find the date of the last currency conversion"                                         
+    else:
+        return "Invalid currency code"
+
+
 
     #! Wont work because can only make a api call per minute
     # get the latest weeks results, to find the date of the last value
@@ -265,7 +328,55 @@ def selling():
     #main()
 
 def buying():
-    print("Yet to be implemented....")
+    aggs = []
+    errored = True
+    index = 0
+    latestDate = datetime.datetime.now()
+    notConfirmed = True
+    stockToSell = "AAPL"
+
+    while (notConfirmed):
+        stockToSell = input("Enter the code for the stock you want to buy: ")
+        if (stockToSell != ""):
+            confirmationDecision = input("Are you sure you want to buy " + stockToSell + " stock? (Y/N) ")
+            if (confirmationDecision == "Y"):
+                notConfirmed = False
+
+    ## Do a for each loop where we do a try catch around this for each loop, increasing the number of days that we are taking away from now until the for each succeeds
+    while (errored):
+        if index != 0:
+            latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
+        try:
+            print(latestDate.strftime("%Y-%m-%d"))
+            for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=5000):
+                print(a)
+                print("Time: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"))
+                aggs.append(a)
+            errored = False
+        except:
+            errored = True
+            index += 1
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + "p at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    difference = aggs[-1].high - aggs[-1].low
+    buyValue = round(aggs[-1].low + (difference / 2), 2)
+    confirmBuy = input("Do you want to buy? (Y/N) ")
+    if (confirmBuy == 'Y'):
+        typeOfPurchase = input("Would you like to buy using amount in GBP or Units? (AMOUNT/UNITS)").upper();
+        if (typeOfPurchase == "AMOUNT"):
+            amountToPurchase = input("How much would you like to spend in GBP? ");
+            print("Amount to Purchase: " + amountToPurchase);
+            print("Buy Value: " + str(round((float(buyValue) / 100), 2)));
+            numberOfUnits = float(amountToPurchase) / round((float(buyValue) / 100), 2);
+            print("Total of " + str(round(numberOfUnits, 0))  + " Units")
+        elif (typeOfPurchase == "UNITS"):
+            amountToPurchase = input("How many Units would you like to buy? ");
+            numberInPounds = float(amountToPurchase) * round(float(buyValue), 2);
+            print("Total of " + str(numberInPounds) + "(GBP) spent");
+        else:
+            print("Defaulted to Amount: ");
+            amountToPurchase = input("How much would you like to spend in GBP? ");
+            numberOfUnits = float(amountToPurchase) / round(float(buyValue) / 100);
+            print("Total of " + str(round(numberOfUnits, 0)) + " Units")
     main()
 
 def main():
