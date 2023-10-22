@@ -176,7 +176,7 @@ def calculateData(data):
 
 
 #
-def calculateData():
+def confirmDates():
     """
     Get the user inputs and then confirm with the user.
     They can then choose to input again.
@@ -198,25 +198,88 @@ def calculateData():
         main()
 
 def selling():
-    print("Yet to be implemented...")
-    main()
+    aggs = []
+    #preNow = datetime.datetime.now()
+    #now = datetime.datetime.now()
+    #print(preNow)
+    #print(now)
+    #print(preNow.strftime("%Y-%m-%d"))
+    #print(now.strftime("%Y-%m-%d"))
+    errored = True
+    index = 0
+    latestDate = datetime.datetime.now()
+    notConfirmed = True
+    stockToSell = "AAPL"
+
+    while (notConfirmed):
+        stockToSell = input("Enter the code for the stock you want to sell: ")
+        if (stockToSell != ""):
+            confirmationDecision = input("Are you sure you want to sell " + stockToSell + " stock? (Y/N) ")
+            if (confirmationDecision == "Y"):
+                notConfirmed = False
+
+    ## Do a for each loop where we do a try catch around this for each loop, increasing the number of days that we are taking away from now until the for each succeeds
+    while (errored):
+        if index != 0:
+            latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
+        try:
+            print(latestDate.strftime("%Y-%m-%d"))
+            for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=5000):
+                print(a)
+                print("Time: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"))
+                aggs.append(a)
+            errored = False
+        except:
+            errored = True
+            index += 1
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    hasStock = input("Do you want to sell? (Y/N) ")
+    if (hasStock == "Y"):
+        stockAmount = input("How much stock (in Units) do you have? ")
+        sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock? ")
+        difference = aggs[-1].high - aggs[-1].low
+        sellValue = round(aggs[-1].low + (difference / 2), 2)
+        if (sellAmount.upper() == 'ALL'):
+            print("All selected")
+            print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)))
+        else:
+            print("All not selected")
+            print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)))
+            print("Amount of units left after selling: " + str(float(stockAmount) - float(sellAmount)) + " Units")
+
+        main()
+    else:
+        main()
+
+    #! Wont work because can only make a api call per minute
+    # get the latest weeks results, to find the date of the last value
+    #latestDate = datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y")
+    #print(latestDate)
+    #for a in CLIENT.list_aggs(ticker=ticker, multiplier=5, timespan="minute", from_=latestDate, to=latestDate, limit=50000):
+    #    print(a)
+    #userTicker = print("Enter the Stock name code:")
+    #if (userTicker != ""):
+    #    for a in CLIENT.list_aggs(ticker=ticker, multiplier=1, timespan="day", from_=preNow.strftime("%Y-%m-%d"), to=now.strftime("%Y-%m-%d"), limit=120):
+    #        aggs.append(a)
+    #print("Price at this moment: " + a[0])
+    #main()
 
 def buying():
     print("Yet to be implemented....")
     main()
 
 def main():
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
-    print("|-----------------------------------------TRADE CALCULATOR-----------------------------------------|")
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
+    print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
+    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
     print("1: Show Trends")
     print("2: Selling")
     print("3: Buying")
     print("4: Exit")
-    choice = input("\nEnter the number option depending on what action you want to carry out:")
+    choice = input("\nEnter the number option depending on what action you want to carry out: ")
     match choice:
         case "1":
-            calculateData()
+            confirmDates()
         case "2":
             selling()
         case "3":
