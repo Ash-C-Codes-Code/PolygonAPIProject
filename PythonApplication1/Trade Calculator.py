@@ -176,7 +176,7 @@ def calculateData(data):
 
 
 #
-def calculateData():
+def confirmDates():
     """
     Get the user inputs and then confirm with the user.
     They can then choose to input again.
@@ -279,7 +279,7 @@ def main():
     choice = input("\nEnter the number option depending on what action you want to carry out: ")
     match choice:
         case "1":
-            calculateData()
+            confirmDates()
         case "2":
             selling()
         case "3":
