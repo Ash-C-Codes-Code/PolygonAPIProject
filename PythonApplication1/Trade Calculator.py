@@ -245,7 +245,7 @@ def selling():
         except:
             errored = True
             index += 1
-    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + "p at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " GBP at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
     hasStock = input("Do you want to sell? (Y/N) ")
     if (hasStock == "Y"):
         amountToGain = 0
@@ -356,7 +356,7 @@ def buying():
         except:
             errored = True
             index += 1
-    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + "p at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " GBP at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
     difference = aggs[-1].high - aggs[-1].low
     buyValue = round(aggs[-1].low + (difference / 2), 2)
     confirmBuy = input("Do you want to buy? (Y/N) ")
@@ -365,8 +365,9 @@ def buying():
         if (typeOfPurchase == "AMOUNT"):
             amountToPurchase = input("How much would you like to spend in GBP? ");
             print("Amount to Purchase: " + amountToPurchase);
-            print("Buy Value: " + str(round((float(buyValue) / 100), 2)));
-            numberOfUnits = float(amountToPurchase) / round((float(buyValue) / 100), 2);
+            print("Buy Value: " + str(round((float(buyValue)), 2)));
+            #numberOfUnits = float(amountToPurchase) / round((float(buyValue) / 100), 2);
+            numberOfUnits = float(amountToPurchase) / round((float(buyValue)), 2);
             print("Total of " + str(round(numberOfUnits, 0))  + " Units")
         elif (typeOfPurchase == "UNITS"):
             amountToPurchase = input("How many Units would you like to buy? ");
@@ -375,7 +376,8 @@ def buying():
         else:
             print("Defaulted to Amount: ");
             amountToPurchase = input("How much would you like to spend in GBP? ");
-            numberOfUnits = float(amountToPurchase) / round(float(buyValue) / 100);
+            #numberOfUnits = float(amountToPurchase) / round(float(buyValue) / 100);
+            numberOfUnits = float(amountToPurchase) / round(float(buyValue));
             print("Total of " + str(round(numberOfUnits, 0)) + " Units")
     main()
 
