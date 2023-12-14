@@ -366,7 +366,6 @@ def buying():
             amountToPurchase = input("How much would you like to spend in GBP? ");
             print("Amount to Purchase: " + amountToPurchase);
             print("Buy Value: " + str(round((float(buyValue)), 2)));
-            #numberOfUnits = float(amountToPurchase) / round((float(buyValue) / 100), 2);
             numberOfUnits = float(amountToPurchase) / round((float(buyValue)), 2);
             print("Total of " + str(round(numberOfUnits, 0))  + " Units")
         elif (typeOfPurchase == "UNITS"):
@@ -376,7 +375,6 @@ def buying():
         else:
             print("Defaulted to Amount: ");
             amountToPurchase = input("How much would you like to spend in GBP? ");
-            #numberOfUnits = float(amountToPurchase) / round(float(buyValue) / 100);
             numberOfUnits = float(amountToPurchase) / round(float(buyValue));
             print("Total of " + str(round(numberOfUnits, 0)) + " Units")
     main()
