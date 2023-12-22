@@ -1,8 +1,10 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton
+from PyQt6.QtCore import Qt
 import datetime
-import numpy
+
 
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
@@ -380,6 +382,20 @@ def buying():
     main()
 
 def main():
+    app = QApplication([])
+    menuWindow = QMainWindow();
+    menuWindow.setWindowTitle("Trade Calculator");
+    title = QLabel('TRADE CALCULATOR');
+    titleFont = title.font();
+    titleFont.setPointSize(50);
+    title.setFont(titleFont);
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop);
+    trendsBtn = QPushButton()
+    sellingBtn = QPushButton()
+    buyingBtn = QPushButton()
+    menuWindow.setMenuWidget(title);
+    menuWindow.show();
+    app.exec();
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
     print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
