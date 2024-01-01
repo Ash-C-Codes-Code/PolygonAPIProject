@@ -1,8 +1,9 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
 import datetime
 
 
@@ -385,15 +386,28 @@ def main():
     app = QApplication([])
     menuWindow = QMainWindow();
     menuWindow.setWindowTitle("Trade Calculator");
+    topLayout = QHBoxLayout();
+    centerLayout = QVBoxLayout();
     title = QLabel('TRADE CALCULATOR');
-    titleFont = title.font();
-    titleFont.setPointSize(50);
-    title.setFont(titleFont);
+    title.setFont(QFont("Times", 80, 12));
     title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop);
-    trendsBtn = QPushButton()
-    sellingBtn = QPushButton()
-    buyingBtn = QPushButton()
-    menuWindow.setMenuWidget(title);
+    trendsBtn = QPushButton(text='Trends');
+    trendsBtn.setFixedSize(500, 80);
+    sellingBtn = QPushButton(text='Sell');
+    sellingBtn.setFixedSize(500, 80);
+    buyingBtn = QPushButton(text='Buy');
+    buyingBtn.setFixedSize(500, 80);
+    topLayout.addWidget(title);
+    centerLayout.addWidget(trendsBtn);
+    centerLayout.addWidget(sellingBtn);
+    centerLayout.addWidget(buyingBtn);
+    topWidget = QWidget();
+    topWidget.setLayout(topLayout);
+    menuWindow.setMenuWidget(topWidget);
+    centerWidget = QWidget();
+    centerWidget.setLayout(centerLayout);
+    menuWindow.setCentralWidget(centerWidget)
+    menuWindow.resize(1000, 500);
     menuWindow.show();
     app.exec();
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
