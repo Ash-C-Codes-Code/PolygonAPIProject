@@ -389,18 +389,27 @@ def main():
     topLayout = QHBoxLayout();
     centerLayout = QVBoxLayout();
     title = QLabel('TRADE CALCULATOR');
-    title.setFont(QFont("Times", 80, 12));
+    title.setFont(QFont("Futura", 80, 15));
     title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop);
     trendsBtn = QPushButton(text='Trends');
+    trendsBtn.setFont(QFont("Futura", 25, 15));
     trendsBtn.setFixedSize(500, 80);
     sellingBtn = QPushButton(text='Sell');
+    sellingBtn.setFont(QFont("Futura", 25, 15));
     sellingBtn.setFixedSize(500, 80);
     buyingBtn = QPushButton(text='Buy');
+    buyingBtn .setFont(QFont("Futura", 25, 15));
     buyingBtn.setFixedSize(500, 80);
+    exitBtn = QPushButton(text='Exit');
+    exitBtn.setFont(QFont("Futura", 10, 5));
+    exitBtn.setFixedSize(100, 50);
     topLayout.addWidget(title);
+    topLayout.addWidget(exitBtn);
     centerLayout.addWidget(trendsBtn);
     centerLayout.addWidget(sellingBtn);
     centerLayout.addWidget(buyingBtn);
+    topLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter);
+    centerLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter);
     topWidget = QWidget();
     topWidget.setLayout(topLayout);
     menuWindow.setMenuWidget(topWidget);
@@ -410,6 +419,14 @@ def main():
     menuWindow.resize(1000, 500);
     menuWindow.show();
     app.exec();
+    #if (trendsBtn.click):
+    
+    #elif (sellingBtn.click):
+        
+    #elif (buyingBtn.click):
+        
+    #elif (exitBtn.click):
+    
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
     print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
