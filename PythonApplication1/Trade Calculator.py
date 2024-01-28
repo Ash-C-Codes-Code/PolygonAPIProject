@@ -1,8 +1,11 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
 import datetime
-import numpy
+
 
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
@@ -196,6 +199,8 @@ def confirmDates():
     Then gets the data.
 
     """
+    trendsWindow = QMainWindow();
+    trendsWindow.setWindowTitle("Trade Calculator - Trends");
     global startDateInput
     global endDateInput
 
@@ -211,6 +216,8 @@ def confirmDates():
         main()
 
 def selling():
+    sellingWindow = QMainWindow();
+    sellingWindow.setWindowTitle("Trade Calculator - Selling");
     aggs = []
     #preNow = datetime.datetime.now()
     #now = datetime.datetime.now()
@@ -328,6 +335,8 @@ def convertToCurrency(amountToGain):
     #main()
 
 def buying():
+    buyingWindow = QMainWindow();
+    buyingWindow.setWindowTitle("Trade Calculator - Selling");
     aggs = []
     errored = True
     index = 0
@@ -378,8 +387,73 @@ def buying():
             numberOfUnits = float(amountToPurchase) / round(float(buyValue));
             print("Total of " + str(round(numberOfUnits, 0)) + " Units")
     main()
+    
 
 def main():
+    app = QApplication([])
+    menuWindow = QMainWindow();
+    menuWindow.setWindowTitle("Trade Calculator");
+    topLayout = QHBoxLayout();
+    centerLayout = QVBoxLayout();
+    title = QLabel('TRADE CALCULATOR');
+    title.setFont(QFont("Futura", 80, 15));
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
+    trendsBtn = QPushButton(text='Trends');
+    trendsBtn.setFont(QFont("Futura", 25, 15));
+    trendsBtn.setFixedSize(500, 80);
+    sellingBtn = QPushButton(text='Sell');
+    sellingBtn.setFont(QFont("Futura", 25, 15));
+    sellingBtn.setFixedSize(500, 80);
+    buyingBtn = QPushButton(text='Buy');
+    buyingBtn .setFont(QFont("Futura", 25, 15));
+    buyingBtn.setFixedSize(500, 80);
+    exitBtn = QPushButton(text='Exit');
+    exitBtn.setFont(QFont("Futura", 10, 5));
+    exitBtn.setFixedSize(100, 50);
+    topLayout.addWidget(title);
+    topLayout.addWidget(exitBtn);
+    centerLayout.addWidget(trendsBtn);
+    centerLayout.addWidget(sellingBtn);
+    centerLayout.addWidget(buyingBtn);
+    topLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter);
+    centerLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter);
+    topWidget = QWidget();
+    topWidget.setLayout(topLayout);
+    menuWindow.setMenuWidget(topWidget);
+    centerWidget = QWidget();
+    centerWidget.setLayout(centerLayout);
+    menuWindow.setCentralWidget(centerWidget)
+    menuWindow.resize(1000, 500);
+    
+    def trendsBtnClicked():
+        print("Trends Clicked");
+        menuWindow.close();
+        confirmDates();
+        
+    def sellingBtnClicked():
+        print("Selling Clicked");
+        menuWindow.close();
+        selling();
+        
+    def buyingBtnClicked():
+        print("Buying Clicked");
+        menuWindow.close();
+        buying();
+        
+    def exitBtnClicked():
+        print("Exit Clicked");
+        app.quit();
+        exit();
+        
+    
+    trendsBtn.clicked.connect(trendsBtnClicked);
+    sellingBtn.clicked.connect(sellingBtnClicked);
+    buyingBtn.clicked.connect(buyingBtnClicked);
+    exitBtn.clicked.connect(exitBtnClicked);
+    
+    menuWindow.show();
+    app.exec();
+    
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
     print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
