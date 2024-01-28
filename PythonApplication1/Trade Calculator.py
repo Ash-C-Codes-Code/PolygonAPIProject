@@ -199,6 +199,8 @@ def confirmDates():
     Then gets the data.
 
     """
+    trendsWindow = QMainWindow();
+    trendsWindow.setWindowTitle("Trade Calculator - Trends");
     global startDateInput
     global endDateInput
 
@@ -214,6 +216,8 @@ def confirmDates():
         main()
 
 def selling():
+    sellingWindow = QMainWindow();
+    sellingWindow.setWindowTitle("Trade Calculator - Selling");
     aggs = []
     #preNow = datetime.datetime.now()
     #now = datetime.datetime.now()
@@ -331,6 +335,8 @@ def convertToCurrency(amountToGain):
     #main()
 
 def buying():
+    buyingWindow = QMainWindow();
+    buyingWindow.setWindowTitle("Trade Calculator - Selling");
     aggs = []
     errored = True
     index = 0
@@ -381,6 +387,7 @@ def buying():
             numberOfUnits = float(amountToPurchase) / round(float(buyValue));
             print("Total of " + str(round(numberOfUnits, 0)) + " Units")
     main()
+    
 
 def main():
     app = QApplication([])
@@ -390,7 +397,7 @@ def main():
     centerLayout = QVBoxLayout();
     title = QLabel('TRADE CALCULATOR');
     title.setFont(QFont("Futura", 80, 15));
-    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignTop);
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
     trendsBtn = QPushButton(text='Trends');
     trendsBtn.setFont(QFont("Futura", 25, 15));
     trendsBtn.setFixedSize(500, 80);
@@ -417,15 +424,35 @@ def main():
     centerWidget.setLayout(centerLayout);
     menuWindow.setCentralWidget(centerWidget)
     menuWindow.resize(1000, 500);
+    
+    def trendsBtnClicked():
+        print("Trends Clicked");
+        menuWindow.close();
+        confirmDates();
+        
+    def sellingBtnClicked():
+        print("Selling Clicked");
+        menuWindow.close();
+        selling();
+        
+    def buyingBtnClicked():
+        print("Buying Clicked");
+        menuWindow.close();
+        buying();
+        
+    def exitBtnClicked():
+        print("Exit Clicked");
+        app.quit();
+        exit();
+        
+    
+    trendsBtn.clicked.connect(trendsBtnClicked);
+    sellingBtn.clicked.connect(sellingBtnClicked);
+    buyingBtn.clicked.connect(buyingBtnClicked);
+    exitBtn.clicked.connect(exitBtnClicked);
+    
     menuWindow.show();
     app.exec();
-    #if (trendsBtn.click):
-    
-    #elif (sellingBtn.click):
-        
-    #elif (buyingBtn.click):
-        
-    #elif (exitBtn.click):
     
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
     print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
