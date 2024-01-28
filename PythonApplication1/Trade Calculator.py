@@ -10,6 +10,7 @@ import datetime
 CLIENT = RESTClient(api_key="n7T7pW1Ius5xnMnQmOe_37XNGLNWavdu")
 ticker = "AAPL"
 c = CurrencyConverter()
+APP = QApplication([])
 
 class dailyData:
     """
@@ -199,10 +200,76 @@ def confirmDates():
     Then gets the data.
 
     """
-    trendsWindow = QMainWindow();
-    trendsWindow.setWindowTitle("Trade Calculator - Trends");
     global startDateInput
     global endDateInput
+    
+    #GUI Window for the trends
+    trendsWindow = QMainWindow();
+    trendsWindow.setWindowTitle("Trade Calculator - Trends");
+    titleLayout = QHBoxLayout();
+    datesLayout = QHBoxLayout();
+    buttonLayout = QHBoxLayout();
+
+    #Create GUI Labels and Title
+    title = QLabel('TRADE CALCULATOR - Trends');
+    title.setFont(QFont("Futura", 50, 15));
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
+    
+    startDateLabel = QLabel('Start Date:');
+    startDateLabel.setFont(QFont("Futura", 20, 10));
+    startDateLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    
+    endDateLabel = QLabel('Start Date:');
+    endDateLabel.setFont(QFont("Futura", 20, 10));
+    endDateLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    
+    #Create GUI confirm and back button
+    backBtn = QPushButton(text='< Back');
+    backBtn.setFont(QFont("Futura", 10, 5));
+    backBtn.setFixedSize(100, 50);
+    
+    confirmBtn = QPushButton(text='Confirm');
+    confirmBtn.setFont(QFont("Futura", 15, 10));
+    confirmBtn.setFixedSize(250, 40);
+    
+    #Create GUI Date pickers for start/end date
+    
+    #Add all widgets to their respective layouts
+    titleLayout.addWidget(backBtn);
+    titleLayout.addWidget(title);
+    datesLayout.addWidget(startDateLabel);
+    datesLayout.addWidget(endDateLabel);
+    buttonLayout.addWidget(confirmBtn);
+    buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    
+    #Set the layout widgets and add to windows
+    titleWidget = QWidget();
+    titleWidget.setLayout(titleLayout);
+    trendsWindow.setMenuWidget(titleLayout);
+    datesWidget = QWidget();
+    datesWidget.setLayout(datesLayout);
+    trendsWindow.setMenuWidget(datesLayout)
+    buttonsWidget = QWidget();
+    buttonsWidget.setLayout(buttonLayout);
+    trendsWindow.setMenuWidget(buttonLayout)
+    trendsWindow.resize(1000, 500);
+    
+    #functions for button clicks
+    def confirmBtnClicked():
+        print("Confirm Clicked");
+        trendsWindow.close();
+        getData();
+        
+    def backBtnClicked():
+        print("Back Clicked");
+        trendsWindow.close();
+        main();
+        
+    #Calls for when buttons are clicked
+    confirmBtn.clicked.connect(confirmBtnClicked);
+    backBtn.clicked.connect(backBtnClicked);
+    
+    trendsWindow.show();
 
     getInputs()
     userConfirmation = input("Do you want to get the data from " + startDateInput + " to " + endDateInput + " ? (Y/N) ")
@@ -390,14 +457,18 @@ def buying():
     
 
 def main():
-    app = QApplication([])
+    #Handle GUI
     menuWindow = QMainWindow();
     menuWindow.setWindowTitle("Trade Calculator");
     topLayout = QHBoxLayout();
     centerLayout = QVBoxLayout();
+    
+    #GUI Menu title
     title = QLabel('TRADE CALCULATOR');
     title.setFont(QFont("Futura", 80, 15));
     title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
+    
+    #GUI Menu Buttons
     trendsBtn = QPushButton(text='Trends');
     trendsBtn.setFont(QFont("Futura", 25, 15));
     trendsBtn.setFixedSize(500, 80);
@@ -410,6 +481,8 @@ def main():
     exitBtn = QPushButton(text='Exit');
     exitBtn.setFont(QFont("Futura", 10, 5));
     exitBtn.setFixedSize(100, 50);
+    
+    #Add buttons and title to layouts/window
     topLayout.addWidget(title);
     topLayout.addWidget(exitBtn);
     centerLayout.addWidget(trendsBtn);
@@ -425,6 +498,7 @@ def main():
     menuWindow.setCentralWidget(centerWidget)
     menuWindow.resize(1000, 500);
     
+    #Button click functions
     def trendsBtnClicked():
         print("Trends Clicked");
         menuWindow.close();
@@ -442,18 +516,21 @@ def main():
         
     def exitBtnClicked():
         print("Exit Clicked");
-        app.quit();
+        APP.quit();
         exit();
         
     
+    #Calls for when buttons are clicked
     trendsBtn.clicked.connect(trendsBtnClicked);
     sellingBtn.clicked.connect(sellingBtnClicked);
     buyingBtn.clicked.connect(buyingBtnClicked);
     exitBtn.clicked.connect(exitBtnClicked);
     
+    #Execute application
     menuWindow.show();
-    app.exec();
+    APP.exec();
     
+    #Command line Interface
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
     print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
     print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
