@@ -1,7 +1,7 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 import datetime
@@ -209,22 +209,25 @@ def confirmDates():
     titleLayout = QHBoxLayout();
     datesLayout = QHBoxLayout();
     buttonLayout = QHBoxLayout();
+    dateAndButtonVLayout = QVBoxLayout();
 
     #Create GUI Labels and Title
-    title = QLabel('TRADE CALCULATOR - Trends');
+    title = QLabel('TRADE CALCULATOR - TRENDS');
     title.setFont(QFont("Futura", 50, 15));
     title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
     
     startDateLabel = QLabel('Start Date:');
-    startDateLabel.setFont(QFont("Futura", 20, 10));
+    startDateLabel.setFont(QFont("Futura", 15, 8));
     startDateLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    startDateLabel.setFixedSize(100, 40);
     
-    endDateLabel = QLabel('Start Date:');
-    endDateLabel.setFont(QFont("Futura", 20, 10));
+    endDateLabel = QLabel('End Date:');
+    endDateLabel.setFont(QFont("Futura", 15, 8));
     endDateLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    endDateLabel.setFixedSize(100, 40)
     
     #Create GUI confirm and back button
-    backBtn = QPushButton(text='< Back');
+    backBtn = QPushButton(text='Back');
     backBtn.setFont(QFont("Futura", 10, 5));
     backBtn.setFixedSize(100, 50);
     
@@ -233,25 +236,40 @@ def confirmDates():
     confirmBtn.setFixedSize(250, 40);
     
     #Create GUI Date pickers for start/end date
+    startDate = QDateEdit();
+    startDate.setCalendarPopup(True);
+    startDate.setAlignment(Qt.AlignmentFlag.AlignTop);
+    startDate.setFixedSize(250, 40);
+    endDate = QDateEdit();
+    endDate.setCalendarPopup(True);
+    endDate.setAlignment(Qt.AlignmentFlag.AlignTop);
+    endDate.setFixedSize(250, 40);
+    
     
     #Add all widgets to their respective layouts
     titleLayout.addWidget(backBtn);
     titleLayout.addWidget(title);
     datesLayout.addWidget(startDateLabel);
+    datesLayout.addWidget(startDate);
     datesLayout.addWidget(endDateLabel);
+    datesLayout.addWidget(endDate);
     buttonLayout.addWidget(confirmBtn);
     buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    buttonsWidget = QWidget();
+    buttonsWidget.setLayout(buttonLayout);
+    datesWidget = QWidget();
+    datesWidget.setLayout(datesLayout);
+    dateAndButtonVLayout.addWidget(datesWidget);
+    dateAndButtonVLayout.addWidget(buttonsWidget);
+    
     
     #Set the layout widgets and add to windows
     titleWidget = QWidget();
     titleWidget.setLayout(titleLayout);
-    trendsWindow.setMenuWidget(titleLayout);
-    datesWidget = QWidget();
-    datesWidget.setLayout(datesLayout);
-    trendsWindow.setMenuWidget(datesLayout)
-    buttonsWidget = QWidget();
-    buttonsWidget.setLayout(buttonLayout);
-    trendsWindow.setMenuWidget(buttonLayout)
+    trendsWindow.setMenuWidget(titleWidget);
+    dateAndButtonWidget = QWidget();
+    dateAndButtonWidget.setLayout(dateAndButtonVLayout);
+    trendsWindow.setCentralWidget(dateAndButtonWidget);
     trendsWindow.resize(1000, 500);
     
     #functions for button clicks
