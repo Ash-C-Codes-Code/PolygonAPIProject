@@ -2,7 +2,7 @@ from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QDateTime
 from PyQt6.QtGui import QFont
 import datetime
 
@@ -240,10 +240,16 @@ def confirmDates():
     startDate.setCalendarPopup(True);
     startDate.setAlignment(Qt.AlignmentFlag.AlignTop);
     startDate.setFixedSize(250, 40);
+    startDate.setDateTime(QDateTime.addDays(QDateTime.currentDateTime(), -7));
     endDate = QDateEdit();
     endDate.setCalendarPopup(True);
     endDate.setAlignment(Qt.AlignmentFlag.AlignTop);
     endDate.setFixedSize(250, 40);
+    endDate.setDateTime(QDateTime.currentDateTime());
+    endDate.setMaximumDateTime(QDateTime.currentDateTime());
+    print(QDateTime.currentDateTime());
+    startDate.setMaximumDateTime(QDateTime.addDays(endDate.dateTime(), -1));
+    endDate.setMinimumDateTime(QDateTime.addDays(startDate.dateTime(), 1));
     
     
     #Add all widgets to their respective layouts
