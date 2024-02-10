@@ -95,31 +95,40 @@ def getData():
     lowest.low = 100000
     notConfirmed = True
     stockToSell = "AAPL"
+    tickerNames = [];
+    tickers = []
+    count = 0;
+    #Get list of all possible stock codes
+    for a in CLIENT.list_tickers(market='stocks', limit=100):
+        tickers.append(a.ticker);
+        tickerNames.append(a.name);
+        count = count + 1;
+        print(str(count) + ": " + a.name + " (" + a.ticker + ")");
+        
+    # while (notConfirmed):
+    #     stockToSell = input("Enter the code for the stock you want to check: ")
+    #     if (stockToSell != ""):
+    #         confirmationDecision = input("Are you sure you want to check " + stockToSell + " stock? (Y/N) ")
+    #         if (confirmationDecision == "Y"):
+    #             notConfirmed = False
 
-    while (notConfirmed):
-        stockToSell = input("Enter the code for the stock you want to check: ")
-        if (stockToSell != ""):
-            confirmationDecision = input("Are you sure you want to check " + stockToSell + " stock? (Y/N) ")
-            if (confirmationDecision == "Y"):
-                notConfirmed = False
+    # for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
+    #     print(a)
+    #     #print("High: " + str(a.high))
+    #     #print("Low: " + str(a.low))
+    #     #print("Open: " + str(a.open))
+    #     #print("Close: " + str(a.close))
+    #     #timestamp must be divided by 1000 to be able to be converted to a datetime object
+    #     #print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
+    #     aggs.append(a)
+    #     if (a.high > highest.high):
+    #         highest = a
+    #     if (a.low < lowest.low):
+    #         lowest = a
 
-    for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=1, timespan="day", from_=formatDates(startDateInput), to=formatDates(endDateInput), limit=50000):
-        print(a)
-        #print("High: " + str(a.high))
-        #print("Low: " + str(a.low))
-        #print("Open: " + str(a.open))
-        #print("Close: " + str(a.close))
-        #timestamp must be divided by 1000 to be able to be converted to a datetime object
-        #print("Timestamp: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y"))
-        aggs.append(a)
-        if (a.high > highest.high):
-            highest = a
-        if (a.low < lowest.low):
-            lowest = a
-
-    print("Highest: " + str(highest.high) + ", on " + datetime.datetime.fromtimestamp(highest.timestamp/1000).strftime("%d/%m/%Y"))
-    print("Lowest: " + str(lowest.low) + ", on " + datetime.datetime.fromtimestamp(lowest.timestamp/1000).strftime("%d/%m/%Y"))
-    calculateData(aggs)
+    # print("Highest: " + str(highest.high) + ", on " + datetime.datetime.fromtimestamp(highest.timestamp/1000).strftime("%d/%m/%Y"))
+    # print("Lowest: " + str(lowest.low) + ", on " + datetime.datetime.fromtimestamp(lowest.timestamp/1000).strftime("%d/%m/%Y"))
+    # calculateData(aggs)
 
 def sortByTimestamp(a):
     """
@@ -247,7 +256,6 @@ def confirmDates():
     endDate.setFixedSize(250, 40);
     endDate.setDateTime(QDateTime.currentDateTime());
     endDate.setMaximumDateTime(QDateTime.currentDateTime());
-    print(QDateTime.currentDateTime());
     startDate.setMaximumDateTime(QDateTime.addDays(endDate.dateTime(), -1));
     endDate.setMinimumDateTime(QDateTime.addDays(startDate.dateTime(), 1));
     
@@ -295,16 +303,16 @@ def confirmDates():
     
     trendsWindow.show();
 
-    getInputs()
-    userConfirmation = input("Do you want to get the data from " + startDateInput + " to " + endDateInput + " ? (Y/N) ")
-    while (not(userConfirmation == 'Y' or userConfirmation == 'N')):
-        userConfirmation = input("Input invalid, do you want to get the data from " + startDateInput + " to " + endDateInput + " ? (Y/N) ")
+    # getInputs()
+    # userConfirmation = input("Do you want to get the data from " + startDateInput + " to " + endDateInput + " ? (Y/N) ")
+    # while (not(userConfirmation == 'Y' or userConfirmation == 'N')):
+    #     userConfirmation = input("Input invalid, do you want to get the data from " + startDateInput + " to " + endDateInput + " ? (Y/N) ")
 
-    if (userConfirmation == 'N'):
-        getInputs()
-    else:
-        getData()
-        main()
+    # if (userConfirmation == 'N'):
+    #     getInputs()
+    # else:
+    #     getData()
+    #     main()
 
 def selling():
     sellingWindow = QMainWindow();
@@ -555,22 +563,22 @@ def main():
     APP.exec();
     
     #Command line Interface
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
-    print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
-    print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
-    print("1: Show Trends")
-    print("2: Selling")
-    print("3: Buying")
-    print("4: Exit")
-    choice = input("\nEnter the number option depending on what action you want to carry out: ")
-    match choice:
-        case "1":
-            confirmDates()
-        case "2":
-            selling()
-        case "3":
-            buying()
-        case "4":
-            exit()
+    # print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|")
+    # print("|-------------------------------------------------  TRADE CALCULATOR  -------------------------------------------------|")
+    # print("|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|\n\n")
+    # print("1: Show Trends")
+    # print("2: Selling")
+    # print("3: Buying")
+    # print("4: Exit")
+    # choice = input("\nEnter the number option depending on what action you want to carry out: ")
+    # match choice:
+    #     case "1":
+    #         confirmDates()
+    #     case "2":
+    #         selling()
+    #     case "3":
+    #         buying()
+    #     case "4":
+    #         exit()
 
 main()
