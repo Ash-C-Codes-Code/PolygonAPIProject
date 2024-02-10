@@ -1,7 +1,7 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit, QComboBox
 from PyQt6.QtCore import Qt, QDateTime
 from PyQt6.QtGui import QFont
 import datetime
@@ -99,11 +99,61 @@ def getData():
     tickers = []
     count = 0;
     #Get list of all possible stock codes
-    for a in CLIENT.list_tickers(market='stocks', limit=100):
+    for a in CLIENT.list_tickers(market='stocks', limit=1000):
         tickers.append(a.ticker);
         tickerNames.append(a.name);
         count = count + 1;
         print(str(count) + ": " + a.name + " (" + a.ticker + ")");
+        
+    # GUI Choose a Stock Window
+    chooseStockWindow = QMainWindow();
+    chooseStockWindow.setWindowTitle("Trade Calculator - Trends");
+    titleLayout = QHBoxLayout();
+    dropDownLayout = QHBoxLayout();
+    highestLowestLayout = QHBoxLayout();
+    buttonLayout = QHBoxLayout();
+    verticalLayout = QVBoxLayout();
+
+    #Create GUI Labels and Title
+    title = QLabel('TRADE CALCULATOR - CHOOSE A STOCK');
+    title.setFont(QFont("Futura", 50, 15));
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
+    
+    stockLabel = QLabel('Stock:');
+    stockLabel.setFont(QFont("Futura", 15, 8));
+    stockLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    stockLabel.setFixedSize(100, 40);
+    
+    highestLabel = QLabel('Highest:');
+    highestLabel.setFont(QFont("Futura", 15, 8));
+    highestLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    highestLabel.setFixedSize(100, 40);
+    
+    lowestLabel = QLabel('Lowest:');
+    lowestLabel.setFont(QFont("Futura", 15, 8));
+    lowestLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    lowestLabel.setFixedSize(100, 40);
+        
+    #Create GUI confirm and back button
+    backBtn = QPushButton(text='Back');
+    backBtn.setFont(QFont("Futura", 10, 5));
+    backBtn.setFixedSize(100, 50);
+    
+    confirmBtn = QPushButton(text='Confirm');
+    confirmBtn.setFont(QFont("Futura", 15, 10));
+    confirmBtn.setFixedSize(250, 40);
+    
+    #Create GUI ComboBox
+    stockBox = QComboBox();
+    stockBox.setFixedSize(600, 40)
+    
+    tickCount = 0;
+    for a in tickers:
+        stockBox.addItem(tickerNames[tickCount] + "(" + a + ")");
+        
+        
+    
+    
         
     # while (notConfirmed):
     #     stockToSell = input("Enter the code for the stock you want to check: ")
