@@ -104,6 +104,8 @@ def getData():
         tickerNames.append(a.name);
         count = count + 1;
         print(str(count) + ": " + a.name + " (" + a.ticker + ")");
+        if (count == 5000):
+            break;
         
     # GUI Choose a Stock Window
     chooseStockWindow = QMainWindow();
@@ -133,6 +135,16 @@ def getData():
     lowestLabel.setFont(QFont("Futura", 15, 8));
     lowestLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
     lowestLabel.setFixedSize(100, 40);
+    
+    highestBox = QLabel("");
+    highestBox.setFont(QFont("Futura", 15, 8));
+    highestBox.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    highestBox.setFixedSize(100, 40);
+    
+    lowestBox = QLabel("");
+    lowestBox.setFont(QFont("Futura", 15, 8));
+    lowestBox.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    lowestBox.setFixedSize(100, 40);
         
     #Create GUI confirm and back button
     backBtn = QPushButton(text='Back');
@@ -145,16 +157,61 @@ def getData():
     
     #Create GUI ComboBox
     stockBox = QComboBox();
-    stockBox.setFixedSize(600, 40)
+    stockBox.setFixedSize(600, 40);
     
     tickCount = 0;
     for a in tickers:
         stockBox.addItem(tickerNames[tickCount] + "(" + a + ")");
+        tickCount = tickCount + 1;
         
-        
+    #Add all widgets to their respective layouts
+    titleLayout.addWidget(backBtn);
+    titleLayout.addWidget(title);
+    dropDownLayout.addWidget(stockLabel);
+    dropDownLayout.addWidget(stockBox);
+    highestLowestLayout.addWidget(highestLabel);
+    highestLowestLayout.addWidget(highestBox);
+    highestLowestLayout.addWidget(lowestLabel);
+    highestLowestLayout.addWidget(lowestBox);
+    buttonLayout.addWidget(confirmBtn);
+    buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    buttonsWidget = QWidget();
+    buttonsWidget.setLayout(buttonLayout);
+    stockWidget = QWidget();
+    stockWidget.setLayout(dropDownLayout);
+    highestLowestWidget = QWidget();
+    highestLowestWidget.setLayout(highestLowestLayout);
+    verticalLayout.addWidget(stockWidget);
+    verticalLayout.addWidget(highestLowestWidget);
+    verticalLayout.addWidget(buttonsWidget);
     
     
+    #Set the layout widgets and add to windows
+    titleWidget = QWidget();
+    titleWidget.setLayout(titleLayout);
+    chooseStockWindow.setMenuWidget(titleWidget);
+    verticalWidget = QWidget();
+    verticalWidget.setLayout(verticalLayout);
+    chooseStockWindow.setCentralWidget(verticalWidget);
+    chooseStockWindow.resize(1000, 500);
+    
+    #functions for button clicks
+    def confirmBtnClicked():
+        print("Confirm Clicked");
+        chooseStockWindow.close();
+        getData();
         
+    def backBtnClicked():
+        print("Back Clicked");
+        chooseStockWindow.close();
+        main();
+        
+    #Calls for when buttons are clicked
+    confirmBtn.clicked.connect(confirmBtnClicked);
+    backBtn.clicked.connect(backBtnClicked);
+    
+    chooseStockWindow.show();
+    
     # while (notConfirmed):
     #     stockToSell = input("Enter the code for the stock you want to check: ")
     #     if (stockToSell != ""):
