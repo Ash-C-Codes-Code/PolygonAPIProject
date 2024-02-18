@@ -79,20 +79,16 @@ def getInputs():
         if (endDateInput.upper() == "EXIT"):
             exit()
 
-def getData():
+def getData(startDateInput, endDateInput):
     """
     Handles the API call.
     Calculate the highest and lowest values between the date inputs
     """
-    global startDateInput
-    global endDateInput
+    # global startDateInput
+    # global endDateInput
 
     # List Aggregates (Bars)
     aggs = []
-    highest = dailyData()
-    highest.high = 0
-    lowest = dailyData()
-    lowest.low = 100000
     notConfirmed = True
     stockToSell = "AAPL"
     tickerNames = [];
@@ -199,7 +195,7 @@ def getData():
     def confirmBtnClicked():
         print("Confirm Clicked");
         chooseStockWindow.close();
-        getData();
+        getData(startDateInput, endDateInput);
         
     def backBtnClicked():
         print("Back Clicked");
@@ -213,13 +209,26 @@ def getData():
         stockCode = stockNameAndCode.split("(")[1];
         stockCode = stockCode.split(")")[0];
         print("Chosen stock code: " + stockCode);
-        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=1, timespan="day", from_=formatDates(), to=formatDates(endDateInput), limit=50000):
+        print("Start Date: " + str(startDateInput));
+        print("End Date: " + str(endDateInput));
+        print("Formatted Start Date: " + startDateInput.toString("yyyy-MM-dd"));
+        print("Formatted End Date: " + endDateInput.toString("yyyy-MM-dd"));
+        #print("Formatted Start Date: " + startDateInput.strftime("%Y-%m-%d"));
+        #print("Formatted End Date: " + endDateInput.strftime("%Y-%m-%d"));
+        highest = dailyData()
+        highest.high = 0
+        lowest = dailyData()
+        lowest.low = 100000
+        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=1, timespan="day", from_=startDateInput.toString("yyyy-MM-dd"), to=endDateInput.toString("yyyy-MM-dd"), limit=50000):
             print(a);
             aggs.append(a);
             if (a.high > highest.high):
                 highest = a;
             if (a.low < lowest.low):
                 lowest = a;
+        
+        print("Highest : " + str(highest.high));
+        print("lowest: " + str(lowest.low));
         
         
     #Calls for when buttons are clicked
@@ -415,7 +424,9 @@ def confirmDates():
     def confirmBtnClicked():
         print("Confirm Clicked");
         trendsWindow.close();
-        getData();
+        startDateInput = startDate.date();
+        endDateInput = endDate.date();
+        getData(startDateInput, endDateInput);
         
     def backBtnClicked():
         print("Back Clicked");
