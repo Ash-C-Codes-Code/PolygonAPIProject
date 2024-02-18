@@ -2,7 +2,7 @@ from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit, QComboBox
-from PyQt6.QtCore import Qt, QDateTime
+from PyQt6.QtCore import Qt, QDateTime, QEvent
 from PyQt6.QtGui import QFont
 import datetime
 
@@ -117,7 +117,7 @@ def getData():
     verticalLayout = QVBoxLayout();
 
     #Create GUI Labels and Title
-    title = QLabel('TRADE CALCULATOR - CHOOSE A STOCK');
+    title = QLabel('CHOOSE A STOCK');
     title.setFont(QFont("Futura", 50, 15));
     title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
     
@@ -205,10 +205,28 @@ def getData():
         print("Back Clicked");
         chooseStockWindow.close();
         main();
+    
+    def stockChosen():
+        print("Chosen stock is : " + stockBox.currentText());
+        # Split the text to get the stock code
+        stockNameAndCode = stockBox.currentText();
+        stockCode = stockNameAndCode.split("(")[1];
+        stockCode = stockCode.split(")")[0];
+        print("Chosen stock code: " + stockCode);
+        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=1, timespan="day", from_=formatDates(), to=formatDates(endDateInput), limit=50000):
+            print(a);
+            aggs.append(a);
+            if (a.high > highest.high):
+                highest = a;
+            if (a.low < lowest.low):
+                lowest = a;
+        
         
     #Calls for when buttons are clicked
     confirmBtn.clicked.connect(confirmBtnClicked);
     backBtn.clicked.connect(backBtnClicked);
+    
+    stockBox.currentIndexChanged.connect(stockChosen);
     
     chooseStockWindow.show();
     
