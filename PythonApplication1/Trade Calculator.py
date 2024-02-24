@@ -195,7 +195,7 @@ def getData(startDateInput, endDateInput):
     def confirmBtnClicked():
         print("Confirm Clicked");
         chooseStockWindow.close();
-        getData(startDateInput, endDateInput);
+        calculateData(aggs, stockBox.currentText());
         
     def backBtnClicked():
         print("Back Clicked");
@@ -203,6 +203,8 @@ def getData(startDateInput, endDateInput):
         main();
     
     def stockChosen():
+        #Reset the aggs
+        aggs = [];
         print("Chosen stock is : " + stockBox.currentText());
         # Split the text to get the stock code
         stockNameAndCode = stockBox.currentText();
@@ -229,6 +231,8 @@ def getData(startDateInput, endDateInput):
         
         print("Highest : " + str(highest.high));
         print("lowest: " + str(lowest.low));
+        highestBox.setText(str(highest.high));
+        lowestBox.setText(str(lowest.low))
         
         
     #Calls for when buttons are clicked
@@ -272,11 +276,117 @@ def sortByTimestamp(a):
     """
     return a.timestamp
 
-def calculateData(data):
+def calculateData(data, stock):
     """
     Calculates the average of each day
 
     """
+    # GUI Choose a Stock Window
+    trendsWindow = QMainWindow();
+    trendsWindow.setWindowTitle("Trade Calculator - Trends");
+    titleLayout = QHBoxLayout();
+    stockNameLayout = QHBoxLayout();
+    graphLayout = QHBoxLayout();
+    trendLayout = QHBoxLayout();
+    buttonLayout = QHBoxLayout();
+    verticalLayout = QVBoxLayout();
+
+    #Create GUI Labels and Title
+    title = QLabel('STOCK TRENDS');
+    title.setFont(QFont("Futura", 50, 15));
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
+    
+    stockLabel = QLabel('Chosen Stock:');
+    stockLabel.setFont(QFont("Futura", 15, 8));
+    stockLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    stockLabel.setFixedSize(100, 40);
+    
+    chosenStock = QLabel(stock);
+    chosenStock.setFont(QFont("Futura", 15, 8));
+    chosenStock.setAlignment(Qt.AlignmentFlag.AlignCenter);
+    chosenStock.setFixedSize(100, 40);
+    
+    overallTrendLabel = QLabel("Overall Trend:");
+    overallTrendLabel.setFont(QFont("Futura", 15, 8));
+    overallTrendLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    overallTrendLabel.setFixedSize(100, 40);
+    
+    overallTrend = QLabel("");
+    overallTrend.setFont(QFont("Futura", 15, 8));
+    overallTrend.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    overallTrend.setFixedSize(100, 40);
+            
+    #Create GUI confirm and back button
+    backBtn = QPushButton(text='Back');
+    backBtn.setFont(QFont("Futura", 10, 5));
+    backBtn.setFixedSize(100, 50);
+    
+    changeDateBtn = QPushButton(text='Change Dates');
+    changeDateBtn.setFont(QFont("Futura", 15, 10));
+    changeDateBtn.setFixedSize(250, 40);
+    
+    changeStockBtn = QPushButton(text='Change Stock');
+    changeStockBtn.setFont(QFont("Futura", 15, 10));
+    changeStockBtn.setFixedSize(250, 40);
+        
+    #Add all widgets to their respective layouts
+    titleLayout.addWidget(backBtn);
+    titleLayout.addWidget(title);
+    stockNameLayout.addWidget(stockLabel);
+    stockNameLayout.addWidget(chosenStock);
+    trendLayout.addWidget(overallTrendLabel);
+    trendLayout.addWidget(overallTrend);
+    buttonLayout.addWidget(changeDateBtn);
+    buttonLayout.addWidget(changeStockBtn);
+    buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    stockNameWidget = QWidget();
+    stockNameWidget.setLayout(stockNameLayout);
+    graphWidget = QWidget();
+    graphWidget.setLayout(graphLayout);
+    trendWidget = QWidget();
+    trendWidget.setLayout(trendLayout);
+    buttonsWidget = QWidget();
+    buttonsWidget.setLayout(buttonLayout);
+    verticalLayout.addWidget(stockNameWidget);
+    verticalLayout.addWidget(graphWidget);
+    verticalLayout.addWidget(trendWidget);
+    verticalLayout.addWidget(buttonsWidget);
+    
+    
+    #Set the layout widgets and add to windows
+    titleWidget = QWidget();
+    titleWidget.setLayout(titleLayout);
+    trendsWindow.setMenuWidget(titleWidget);
+    verticalWidget = QWidget();
+    verticalWidget.setLayout(verticalLayout);
+    trendsWindow.setCentralWidget(verticalWidget);
+    trendsWindow.resize(1000, 500);
+    
+    #functions for button clicks
+    def backBtnClicked():
+        print("Back Clicked");
+        trendsWindow.close();
+        main();
+        
+    def changeDatesBtnClicked():
+        print("Change Dates Clicked");
+        confirmDates();
+        trendsWindow.close();
+        
+    def changeStockBtnClicked():
+        print("Change Stock Clicked");
+        getData(startDateInput, endDateInput);
+        trendsWindow.close();
+        
+        
+    #Calls for when buttons are clicked
+    changeDateBtn.clicked.connect(changeDatesBtnClicked);
+    changeStockBtn.clicked.connect(changeStockBtnClicked);
+    backBtn.clicked.connect(backBtnClicked);
+        
+    trendsWindow.show();
+    
+    
     #Calculate the averages
     data.sort(key=sortByTimestamp)
     averages = []
