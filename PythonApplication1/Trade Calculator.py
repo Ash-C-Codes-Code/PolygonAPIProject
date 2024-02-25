@@ -79,13 +79,13 @@ def getInputs():
         if (endDateInput.upper() == "EXIT"):
             exit()
 
-def getData(startDateInput, endDateInput):
+def getData():
     """
     Handles the API call.
     Calculate the highest and lowest values between the date inputs
     """
-    # global startDateInput
-    # global endDateInput
+    global startDateInput
+    global endDateInput
 
     # List Aggregates (Bars)
     aggs = []
@@ -119,28 +119,28 @@ def getData(startDateInput, endDateInput):
     
     stockLabel = QLabel('Stock:');
     stockLabel.setFont(QFont("Futura", 15, 8));
-    stockLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    stockLabel.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter);
     stockLabel.setFixedSize(100, 40);
     
     highestLabel = QLabel('Highest:');
     highestLabel.setFont(QFont("Futura", 15, 8));
-    highestLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
-    highestLabel.setFixedSize(100, 40);
+    highestLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    highestLabel.setFixedSize(80, 40);
     
     lowestLabel = QLabel('Lowest:');
     lowestLabel.setFont(QFont("Futura", 15, 8));
-    lowestLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
-    lowestLabel.setFixedSize(100, 40);
+    lowestLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    lowestLabel.setFixedSize(80, 40);
     
     highestBox = QLabel("");
     highestBox.setFont(QFont("Futura", 15, 8));
-    highestBox.setAlignment(Qt.AlignmentFlag.AlignHCenter);
-    highestBox.setFixedSize(100, 40);
+    highestBox.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft);
+    highestBox.setFixedSize(60, 40);
     
     lowestBox = QLabel("");
     lowestBox.setFont(QFont("Futura", 15, 8));
-    lowestBox.setAlignment(Qt.AlignmentFlag.AlignHCenter);
-    lowestBox.setFixedSize(100, 40);
+    lowestBox.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft);
+    lowestBox.setFixedSize(60, 40);
         
     #Create GUI confirm and back button
     backBtn = QPushButton(text='Back');
@@ -191,11 +191,8 @@ def getData(startDateInput, endDateInput):
     chooseStockWindow.setCentralWidget(verticalWidget);
     chooseStockWindow.resize(1000, 500);
     
-    #functions for button clicks
-    def confirmBtnClicked():
-        print("Confirm Clicked");
-        chooseStockWindow.close();
-        calculateData(aggs, stockBox.currentText());
+    global stockNameAndCode
+    stockNameAndCode = stockBox.currentText();
         
     def backBtnClicked():
         print("Back Clicked");
@@ -207,6 +204,7 @@ def getData(startDateInput, endDateInput):
         aggs = [];
         print("Chosen stock is : " + stockBox.currentText());
         # Split the text to get the stock code
+        global stockNameAndCode
         stockNameAndCode = stockBox.currentText();
         stockCode = stockNameAndCode.split("(")[1];
         stockCode = stockCode.split(")")[0];
@@ -234,12 +232,20 @@ def getData(startDateInput, endDateInput):
         highestBox.setText(str(highest.high));
         lowestBox.setText(str(lowest.low))
         
+    #functions for button clicks
+    def confirmBtnClicked():
+        print("Confirm Clicked");
+        chooseStockWindow.close();
+        calculateData(aggs, stockNameAndCode);
+        
         
     #Calls for when buttons are clicked
     confirmBtn.clicked.connect(confirmBtnClicked);
     backBtn.clicked.connect(backBtnClicked);
     
     stockBox.currentIndexChanged.connect(stockChosen);
+    
+    stockChosen();
     
     chooseStockWindow.show();
     
@@ -298,23 +304,23 @@ def calculateData(data, stock):
     
     stockLabel = QLabel('Chosen Stock:');
     stockLabel.setFont(QFont("Futura", 15, 8));
-    stockLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    stockLabel.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter);
     stockLabel.setFixedSize(100, 40);
     
     chosenStock = QLabel(stock);
     chosenStock.setFont(QFont("Futura", 15, 8));
-    chosenStock.setAlignment(Qt.AlignmentFlag.AlignCenter);
-    chosenStock.setFixedSize(100, 40);
+    chosenStock.setAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter);
+    chosenStock.setFixedSize(300, 40);
     
     overallTrendLabel = QLabel("Overall Trend:");
     overallTrendLabel.setFont(QFont("Futura", 15, 8));
-    overallTrendLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    overallTrendLabel.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter);
     overallTrendLabel.setFixedSize(100, 40);
     
     overallTrend = QLabel("");
     overallTrend.setFont(QFont("Futura", 15, 8));
-    overallTrend.setAlignment(Qt.AlignmentFlag.AlignLeft);
-    overallTrend.setFixedSize(100, 40);
+    overallTrend.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter);
+    overallTrend.setFixedSize(200, 40);
             
     #Create GUI confirm and back button
     backBtn = QPushButton(text='Back');
@@ -375,7 +381,7 @@ def calculateData(data, stock):
         
     def changeStockBtnClicked():
         print("Change Stock Clicked");
-        getData(startDateInput, endDateInput);
+        getData();
         trendsWindow.close();
         
         
@@ -388,59 +394,59 @@ def calculateData(data, stock):
     
     
     #Calculate the averages
-    data.sort(key=sortByTimestamp)
-    averages = []
-    for point in data:
-        #Calculate the average by finding the middle value between the highest and lowest points in a day
-        difference = point.high - point.low
-        print("High: " + str(point.high) + ", Low: " + str(point.low))
-        average = round(point.low + (difference / 2), 2)
-        print("Average: " + str(average))
-        averages.append(average)
-    print(averages)
-    #Do the averages show to be increasing or decreasing
-    #If an increase of 4%-15% then increasing, if increasing by 15% or more strongly increasing
-    #If an decrease of 4%-15% then decreasing, if decreasing by 15% or more strongly decreasing
-    #If increasing/decreasing within 4% then it is stable
-    increased = "increasing"
-    calculation = averages[-1] - averages[0]
-    percentageAmount = 0
-    if (calculation >= 0):
-        percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 2)
-        print("Increase: " + str(percentageAmount - 100) + "%")
-    else:
-        percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 2)
-        print("Decrease: " + str(percentageAmount - 100) + "%")
-        increased = "decreasing"
+    # data.sort(key=sortByTimestamp)
+    # averages = []
+    # for point in data:
+    #     #Calculate the average by finding the middle value between the highest and lowest points in a day
+    #     difference = point.high - point.low
+    #     print("High: " + str(point.high) + ", Low: " + str(point.low))
+    #     average = round(point.low + (difference / 2), 2)
+    #     print("Average: " + str(average))
+    #     averages.append(average)
+    # print(averages)
+    # #Do the averages show to be increasing or decreasing
+    # #If an increase of 4%-15% then increasing, if increasing by 15% or more strongly increasing
+    # #If an decrease of 4%-15% then decreasing, if decreasing by 15% or more strongly decreasing
+    # #If increasing/decreasing within 4% then it is stable
+    # increased = "increasing"
+    # calculation = averages[-1] - averages[0]
+    # percentageAmount = 0
+    # if (calculation >= 0):
+    #     percentageAmount = round(((averages[0] + calculation) / averages[0]) * 100, 2)
+    #     print("Increase: " + str(percentageAmount - 100) + "%")
+    # else:
+    #     percentageAmount = round(((averages[0] + (calculation * -1)) / averages[0]) * 100, 2)
+    #     print("Decrease: " + str(percentageAmount - 100) + "%")
+    #     increased = "decreasing"
 
-    if ((percentageAmount-100) <= 4):
-        print("Stock is stable at " + str(percentageAmount - 100) + "% " + increased)
-    else:
-        strongChange = ""
-        if ((percentageAmount-100) >= 15):
-            strongChange = "Strongly "
+    # if ((percentageAmount-100) <= 4):
+    #     print("Stock is stable at " + str(percentageAmount - 100) + "% " + increased)
+    # else:
+    #     strongChange = ""
+    #     if ((percentageAmount-100) >= 15):
+    #         strongChange = "Strongly "
 
-        print("Stock has been " + strongChange + increased + " with a rate of " + str(percentageAmount - 100) + "%")
-    #Percentage difference between each average
-    index = 0
-    print("Length of Averages " + str(len(averages)))
-    if (len(averages) >= 2):
-        for a in averages:
-            if (index < len(averages) - 1):
-                difference = averages[index + 1] - a
-                startDate = datetime.datetime.fromtimestamp(data[index].timestamp/1000).strftime("%d/%m/%Y")
-                endDate = datetime.datetime.fromtimestamp(data[index + 1].timestamp/1000).strftime("%d/%m/%Y")
-                if (difference > 0):
-                    percentageAmount = round((a + difference) / a, 2) * 100
-                    print("Increase of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
-                elif (difference < 0):
-                    percentageAmount = round((a + difference * -1) / a, 2) * 100
-                    print("Decrease of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
-                else:
-                    print("No Changes between " + startDate)
-                index += 1
-    else:
-        print("Dates given can not allow a calculation of averages")
+    #     print("Stock has been " + strongChange + increased + " with a rate of " + str(percentageAmount - 100) + "%")
+    # #Percentage difference between each average
+    # index = 0
+    # print("Length of Averages " + str(len(averages)))
+    # if (len(averages) >= 2):
+    #     for a in averages:
+    #         if (index < len(averages) - 1):
+    #             difference = averages[index + 1] - a
+    #             startDate = datetime.datetime.fromtimestamp(data[index].timestamp/1000).strftime("%d/%m/%Y")
+    #             endDate = datetime.datetime.fromtimestamp(data[index + 1].timestamp/1000).strftime("%d/%m/%Y")
+    #             if (difference > 0):
+    #                 percentageAmount = round((a + difference) / a, 2) * 100
+    #                 print("Increase of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
+    #             elif (difference < 0):
+    #                 percentageAmount = round((a + difference * -1) / a, 2) * 100
+    #                 print("Decrease of " + str(percentageAmount - 100) + "% between " + startDate + " and " + endDate + ".")
+    #             else:
+    #                 print("No Changes between " + startDate)
+    #             index += 1
+    # else:
+    #     print("Dates given can not allow a calculation of averages")
 
 
 
@@ -471,12 +477,12 @@ def confirmDates():
     
     startDateLabel = QLabel('Start Date:');
     startDateLabel.setFont(QFont("Futura", 15, 8));
-    startDateLabel.setAlignment(Qt.AlignmentFlag.AlignLeft);
+    startDateLabel.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter);
     startDateLabel.setFixedSize(100, 40);
     
     endDateLabel = QLabel('End Date:');
     endDateLabel.setFont(QFont("Futura", 15, 8));
-    endDateLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter);
+    endDateLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter);
     endDateLabel.setFixedSize(100, 40)
     
     #Create GUI confirm and back button
@@ -491,12 +497,12 @@ def confirmDates():
     #Create GUI Date pickers for start/end date
     startDate = QDateEdit();
     startDate.setCalendarPopup(True);
-    startDate.setAlignment(Qt.AlignmentFlag.AlignTop);
+    startDate.setAlignment(Qt.AlignmentFlag.AlignVCenter);
     startDate.setFixedSize(250, 40);
     startDate.setDateTime(QDateTime.addDays(QDateTime.currentDateTime(), -7));
     endDate = QDateEdit();
     endDate.setCalendarPopup(True);
-    endDate.setAlignment(Qt.AlignmentFlag.AlignTop);
+    endDate.setAlignment(Qt.AlignmentFlag.AlignVCenter);
     endDate.setFixedSize(250, 40);
     endDate.setDateTime(QDateTime.currentDateTime());
     endDate.setMaximumDateTime(QDateTime.currentDateTime());
@@ -534,9 +540,11 @@ def confirmDates():
     def confirmBtnClicked():
         print("Confirm Clicked");
         trendsWindow.close();
+        global startDateInput
+        global endDateInput
         startDateInput = startDate.date();
         endDateInput = endDate.date();
-        getData(startDateInput, endDateInput);
+        getData();
         
     def backBtnClicked():
         print("Back Clicked");
