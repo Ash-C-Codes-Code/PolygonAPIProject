@@ -4,6 +4,7 @@ from currency_converter import CurrencyConverter
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit, QComboBox
 from PyQt6.QtCore import Qt, QDateTime, QEvent
 from PyQt6.QtGui import QFont
+import pyqtgraph
 import datetime
 
 
@@ -201,6 +202,7 @@ def getData():
     
     def stockChosen():
         #Reset the aggs
+        global aggs
         aggs = [];
         print("Chosen stock is : " + stockBox.currentText());
         # Split the text to get the stock code
@@ -234,8 +236,10 @@ def getData():
         
     #functions for button clicks
     def confirmBtnClicked():
+        global aggs;
         print("Confirm Clicked");
         chooseStockWindow.close();
+        print(*aggs, sep = ", ");
         calculateData(aggs, stockNameAndCode);
         
         
@@ -286,7 +290,7 @@ def calculateData(data, stock):
     """
     Calculates the average of each day
 
-    """
+    """    
     # GUI Choose a Stock Window
     trendsWindow = QMainWindow();
     trendsWindow.setWindowTitle("Trade Calculator - Trends");
@@ -334,7 +338,28 @@ def calculateData(data, stock):
     changeStockBtn = QPushButton(text='Change Stock');
     changeStockBtn.setFont(QFont("Futura", 15, 10));
     changeStockBtn.setFixedSize(250, 40);
+    
+    #Create GUI graph
+    stockGraph = pyqtgraph.PlotWidget();
+    
+    #Calculate the averages and plot them on a graph
+    data.sort(key=sortByTimestamp)
+    averages = [];
+    dates = [];
+    for point in data:
+        #Calculate the average by finding the middle value between the highest and lowest points in a day
+        difference = point.high - point.low
+        print("High: " + str(point.high) + ", Low: " + str(point.low))
+        average = round(point.low + (difference / 2), 2)
+        print("Average: " + str(average))
+        averages.append(average)
+        dates.append(point.timestamp);
+        #print("Date: " + datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
+        #dates.append(datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
         
+    stockGraph.plot(dates, averages);
+
+    
     #Add all widgets to their respective layouts
     titleLayout.addWidget(backBtn);
     titleLayout.addWidget(title);
@@ -345,6 +370,7 @@ def calculateData(data, stock):
     buttonLayout.addWidget(changeDateBtn);
     buttonLayout.addWidget(changeStockBtn);
     buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    graphLayout.addWidget(stockGraph);
     stockNameWidget = QWidget();
     stockNameWidget.setLayout(stockNameLayout);
     graphWidget = QWidget();
