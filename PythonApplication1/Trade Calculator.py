@@ -353,12 +353,25 @@ def calculateData(data, stock):
         average = round(point.low + (difference / 2), 2)
         print("Average: " + str(average))
         averages.append(average)
-        dates.append(point.timestamp);
-        #print("Date: " + datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
-        #dates.append(datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
+        # dates.append(point.timestamp);
+        print("Date: " + datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
+        dates.append(datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
         
-    stockGraph.plot(dates, averages);
-
+    print(averages);
+    print(dates);
+        
+    datesdict = dict(enumerate(dates));
+    print(datesdict);
+    
+    pen = pyqtgraph.mkPen(colour=(255, 0, 0));
+    
+    valueDateList = list(zip(datesdict.keys(), dates));
+    print(valueDateList)
+    
+    stockGraph.setBackground('w');
+    stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList);
+    xDatesAxis = stockGraph.getAxis("bottom");
+    xDatesAxis.setTicks([valueDateList]);
     
     #Add all widgets to their respective layouts
     titleLayout.addWidget(backBtn);
