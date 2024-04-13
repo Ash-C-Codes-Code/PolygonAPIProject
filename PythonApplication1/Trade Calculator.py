@@ -358,18 +358,38 @@ def calculateData(data, stock):
         dates.append(datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
         
     print(averages);
+    lowestAverage = 10000000000;
+    highestAverage = 0;
+    for point in averages:
+        if (point < lowestAverage):
+            lowestAverage = point;
+        if (point > highestAverage):
+            highestAverage = point;
+            
     print(dates);
         
     datesdict = dict(enumerate(dates));
+    lowestDate = 1000000000000;
+    highestDate = 0;
+    for date in datesdict:
+        if (date < lowestDate):
+            lowestDate = date;
+        if (date > highestDate):
+            highestDate = date;
+            
     print(datesdict);
     
-    pen = pyqtgraph.mkPen(colour=(255, 0, 0));
+    pen = pyqtgraph.mkPen(colour=(255, 0, 0), width = 5);
     
     valueDateList = list(zip(datesdict.keys(), dates));
     print(valueDateList)
     
     stockGraph.setBackground('w');
-    stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList);
+    stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList, symbol='o', symbolSize=15, symbolBrush='w');
+    stockGraph.setLabel("left", "Value (p)");
+    stockGraph.setLabel("bottom", "Date");
+    stockGraph.setYRange(lowestAverage, highestAverage);
+    stockGraph.setXRange(lowestDate, highestDate);
     xDatesAxis = stockGraph.getAxis("bottom");
     xDatesAxis.setTicks([valueDateList]);
     
