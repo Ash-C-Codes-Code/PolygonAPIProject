@@ -345,6 +345,8 @@ def calculateData(data, stock):
     #Calculate the averages and plot them on a graph
     data.sort(key=sortByTimestamp)
     averages = [];
+    highest = [];
+    lowest = [];
     dates = [];
     for point in data:
         #Calculate the average by finding the middle value between the highest and lowest points in a day
@@ -352,19 +354,23 @@ def calculateData(data, stock):
         print("High: " + str(point.high) + ", Low: " + str(point.low))
         average = round(point.low + (difference / 2), 2)
         print("Average: " + str(average))
-        averages.append(average)
+        highest.append(point.high);
+        lowest.append(point.low);
+        averages.append(average);
         # dates.append(point.timestamp);
         print("Date: " + datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
         dates.append(datetime.datetime.fromtimestamp(point.timestamp/1000).strftime("%d/%m/%Y"));
         
     print(averages);
-    lowestAverage = 10000000000;
-    highestAverage = 0;
-    for point in averages:
-        if (point < lowestAverage):
-            lowestAverage = point;
-        if (point > highestAverage):
-            highestAverage = point;
+    lowestLow = 10000000000;
+    highestHigh = 0;
+    for point in lowest:
+        if (point < lowestLow):
+            lowestLow = point;
+            
+    for point in highest:
+        if (point > highestHigh):
+            highestHigh = point;
             
     print(dates);
         
@@ -383,12 +389,16 @@ def calculateData(data, stock):
     
     valueDateList = list(zip(datesdict.keys(), dates));
     print(valueDateList)
-    
     stockGraph.setBackground('w');
-    stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList, symbol='o', symbolSize=15, symbolBrush='w');
+    stockGraph.plot(list(datesdict.keys()), highest, pen=pen, labels=valueDateList, symbol='arrow_up', symbolSize=30, symbolBrush='g');
+    
+    stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList, symbol='o', symbolSize=10, symbolBrush='k');
+    
+    stockGraph.plot(list(datesdict.keys()), lowest, pen=pen, labels=valueDateList, symbol='arrow_down', symbolSize=30, symbolBrush='r');
+    
     stockGraph.setLabel("left", "Value (p)");
     stockGraph.setLabel("bottom", "Date");
-    stockGraph.setYRange(lowestAverage, highestAverage);
+    stockGraph.setYRange(lowestLow, highestHigh);
     stockGraph.setXRange(lowestDate, highestDate);
     xDatesAxis = stockGraph.getAxis("bottom");
     xDatesAxis.setTicks([valueDateList]);
