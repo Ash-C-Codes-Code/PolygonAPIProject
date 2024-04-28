@@ -642,90 +642,277 @@ def confirmDates():
     #     main()
 
 def selling():
+    tickerNames = [];
+    tickers = []
+    count = 0;
+    #Get list of all possible stock codes
+    for a in CLIENT.list_tickers(market='stocks', limit=1000):
+        tickers.append(a.ticker);
+        tickerNames.append(a.name);
+        count = count + 1;
+        print(str(count) + ": " + a.name + " (" + a.ticker + ")");
+        if (count == 5000):
+            break;   
+    
     sellingWindow = QMainWindow();
     sellingWindow.setWindowTitle("Trade Calculator - Selling");
-    aggs = []
-    #preNow = datetime.datetime.now()
-    #now = datetime.datetime.now()
-    #print(preNow)
-    #print(now)
-    #print(preNow.strftime("%Y-%m-%d"))
-    #print(now.strftime("%Y-%m-%d"))
-    errored = True
-    index = 0
-    latestDate = datetime.datetime.now()
-    notConfirmed = True
-    stockToSell = "AAPL"
+    titleLayout = QHBoxLayout();
+    dropDownLayout = QHBoxLayout();
+    lastestPriceLayout = QHBoxLayout();
+    sellingByOptionLayout = QHBoxLayout();
+    sellingAmountLayout = QHBoxLayout();
+    sellingOutputLayout = QHBoxLayout();
+    buttonLayout = QHBoxLayout();
+    verticalLayout = QVBoxLayout();
 
-    while (notConfirmed):
-        stockToSell = input("Enter the code for the stock you want to sell: ")
-        if (stockToSell != ""):
-            confirmationDecision = input("Are you sure you want to sell " + stockToSell + " stock? (Y/N) ")
-            if (confirmationDecision == "Y"):
-                notConfirmed = False
-
-    ## Do a for each loop where we do a try catch around this for each loop, increasing the number of days that we are taking away from now until the for each succeeds
-    while (errored):
-        if index != 0:
-            latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
-        try:
-            print(latestDate.strftime("%Y-%m-%d"))
-            for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=5000):
-                print(a)
-                print("Time: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"))
-                aggs.append(a)
-            errored = False
-        except:
-            errored = True
-            index += 1
-    print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " GBP at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
-    hasStock = input("Do you want to sell? (Y/N) ")
-    if (hasStock == "Y"):
-        amountToGain = 0
-        stockAmount = input("How much stock (in Units) do you have? ")
-        sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock? ")
-        difference = aggs[-1].high - aggs[-1].low
-        sellValue = round(aggs[-1].low + (difference / 2), 2)
-        if (sellAmount.upper() == 'ALL'):
-            print("All selected")
-            print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)) + "(GBP)")
-            amountToGain = round(sellValue * float(stockAmount), 2)
-        else:
-            print("All not selected")
-            print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)) + "(GBP)")
-            print("Amount of units left after selling: " + str(float(stockAmount) - float(sellAmount)) + " Units")
-            amountToGain = round(sellValue * float(sellAmount), 2)
+    #Create GUI Labels and Title
+    title = QLabel('SELL A STOCK');
+    title.setFont(QFont("Futura", 50, 15));
+    title.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignBottom);
     
-        convertLoop = True;
-        while (convertLoop):
-            doConvert = input("Would you like to convert the amount into a different currency? (Y/N)");
-            if (doConvert == "Y"):
-                convertedAmount = convertToCurrency(amountToGain);
-                if (convertedAmount == "Invalid currency code"):
-                    print ("Could not convert, due to invalid currency code");
-                elif (convertedAmount == "Could not find the date of the last currency conversion"):
-                    print("Could not convert, due to the invalid currency conversion");
-                else:
-                    print("After conversion: " + convertedAmount + " .");
-                    convertLoop = False;
-            elif (doConvert == "N"):
-                convertLoop = False;
-        main()
-    else:
-        main()
+    stockLabel = QLabel('Stock:');
+    stockLabel.setFont(QFont("Futura", 15, 8));
+    stockLabel.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter);
+    stockLabel.setFixedSize(100, 40);
+    
+    latestPriceLabel = QLabel('Latest Price:');
+    latestPriceLabel.setFont(QFont("Futura", 15, 8));
+    latestPriceLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    latestPriceLabel.setFixedSize(80, 40);
+    
+    latestPrice = QLabel("");
+    latestPrice.setFont(QFont("Futura", 15, 8));
+    latestPrice.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft);
+    latestPrice.setFixedSize(60, 40);
+    
+    sellingByOptionLabel = QLabel("Selling by:"); 
+    sellingByOptionLabel.setFont(QFont("Futura", 15, 8));
+    sellingByOptionLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingByOptionLabel.setFixedSize(80, 40);
+    
+    sellingAmountLabel = QLabel("Amount:");
+    sellingAmountLabel.setFont(QFont("Futura", 15, 8));
+    sellingAmountLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingAmountLabel.setFixedSize(80, 40);
+    
+    sellingAmount = QLabel("");
+    sellingAmount.setFont(QFont("Futura", 15, 8));
+    sellingAmount.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingAmount.setFixedSize(80, 40);
+    
+    sellingAmountLeftLabel = QLabel("Quantity:");
+    sellingAmountLeftLabel.setFont(QFont("Futura", 15, 8));
+    sellingAmountLeftLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingAmountLeftLabel.setFixedSize(80, 40);
+    
+    sellingAmountLeft = QLabel("");
+    sellingAmountLeft.setFont(QFont("Futura", 15, 8));
+    sellingAmountLeft.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingAmountLeft.setFixedSize(80, 40);
+    
+    sellingValueleftLabel = QLabel("Value:");
+    sellingValueleftLabel.setFont(QFont("Futura", 15, 8));
+    sellingValueleftLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingValueleftLabel.setFixedSize(80, 40);
+    
+    sellingValueleft = QLabel("");
+    sellingValueleft.setFont(QFont("Futura", 15, 8));
+    sellingValueleft.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
+    sellingValueleft.setFixedSize(80, 40);
+    
+    #Create GUI confirm and back button
+    backBtn = QPushButton(text='Back');
+    backBtn.setFont(QFont("Futura", 10, 5));
+    backBtn.setFixedSize(100, 50);
+    
+    #Create GUI ComboBox
+    stockBox = QComboBox();
+    stockBox.setFixedSize(600, 40);
+    
+    tickCount = 0;
+    for a in tickers:
+        stockBox.addItem(tickerNames[tickCount] + "(" + a + ")");
+        tickCount = tickCount + 1;
+        
+    #Add all widgets to their respective layouts
+    titleLayout.addWidget(backBtn);
+    titleLayout.addWidget(title);
+    dropDownLayout.addWidget(stockLabel);
+    dropDownLayout.addWidget(stockBox);
+    lastestPriceLayout.addWidget(latestPriceLabel);
+    lastestPriceLayout.addWidget(latestPrice);
+    sellingByOptionLayout.addWidget(sellingByOptionLabel);
+    
+    sellingAmountLayout.addWidget(sellingAmountLabel);
+    sellingAmountLayout.addWidget(sellingAmount);
+    sellingOutputLayout.addWidget(sellingAmountLeftLabel);
+    sellingOutputLayout.addWidget(sellingAmountLeft);
+    sellingOutputLayout.addWidget(sellingValueleftLabel);
+    sellingOutputLayout.addWidget(sellingValueleft);
+
+    buttonLayout.setAlignment(Qt.AlignmentFlag.AlignRight);
+    buttonsWidget = QWidget();
+    buttonsWidget.setLayout(buttonLayout);
+    stockWidget = QWidget();
+    stockWidget.setLayout(dropDownLayout);
+    lowestPriceWidget = QWidget();
+    sellingByWidget = QWidget();
+    sellingAmountWidget = QWidget();
+    sellingOutputWidget = QWidget();
+    lowestPriceWidget.setLayout(lastestPriceLayout);
+    sellingByWidget.setLayout(sellingByOptionLayout);
+    sellingAmountWidget.setLayout(sellingAmountLayout);
+    sellingOutputWidget.setLayout(sellingOutputLayout);
+    verticalLayout.addWidget(stockWidget);
+    verticalLayout.addWidget(lowestPriceWidget);
+    verticalLayout.addWidget(sellingByWidget);
+    verticalLayout.addWidget(sellingAmountWidget);
+    verticalLayout.addWidget(sellingOutputWidget);
+    verticalLayout.addWidget(buttonsWidget);
+    
+    
+    #Set the layout widgets and add to windows
+    titleWidget = QWidget();
+    titleWidget.setLayout(titleLayout);
+    sellingWindow.setMenuWidget(titleWidget);
+    verticalWidget = QWidget();
+    verticalWidget.setLayout(verticalLayout);
+    sellingWindow.setCentralWidget(verticalWidget);
+    sellingWindow.resize(1000, 500);
+    
+    global stockNameAndCode
+    stockNameAndCode = stockBox.currentText();
+        
+    def backBtnClicked():
+        print("Back Clicked");
+        sellingWindow.close();
+        main();
+    
+    def stockChosen():
+        #Reset the aggs
+        global aggs
+        aggs = [];
+        print("Chosen stock is : " + stockBox.currentText());
+        # Split the text to get the stock code
+        global stockNameAndCode
+        stockNameAndCode = stockBox.currentText();
+        stockCode = stockNameAndCode.split("(")[1];
+        stockCode = stockCode.split(")")[0];
+        print("Chosen stock code: " + stockCode);
+        print("Start Date: " + str(startDateInput));
+        print("End Date: " + str(endDateInput));
+        print("Formatted Start Date: " + startDateInput.toString("yyyy-MM-dd"));
+        print("Formatted End Date: " + endDateInput.toString("yyyy-MM-dd"));
+        #print("Formatted Start Date: " + startDateInput.strftime("%Y-%m-%d"));
+        #print("Formatted End Date: " + endDateInput.strftime("%Y-%m-%d"));
+        highest = dailyData()
+        highest.high = 0
+        lowest = dailyData()
+        lowest.low = 100000
+        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=1, timespan="day", from_=startDateInput.toString("yyyy-MM-dd"), to=endDateInput.toString("yyyy-MM-dd"), limit=50000):
+            print(a);
+            aggs.append(a);
+            if (a.high > highest.high):
+                highest = a;
+            if (a.low < lowest.low):
+                lowest = a;
+        
+        print("Highest : " + str(highest.high));
+        print("lowest: " + str(lowest.low));
+        
+        
+    #Calls for when buttons are clicked
+    backBtn.clicked.connect(backBtnClicked);
+    
+    stockBox.currentIndexChanged.connect(stockChosen);
+    
+    stockChosen();
+    
+    sellingWindow.show();
+    # sellingWindow = QMainWindow();
+    # sellingWindow.setWindowTitle("Trade Calculator - Selling");
+    # aggs = []
+    # #preNow = datetime.datetime.now()
+    # #now = datetime.datetime.now()
+    # #print(preNow)
+    # #print(now)
+    # #print(preNow.strftime("%Y-%m-%d"))
+    # #print(now.strftime("%Y-%m-%d"))
+    # errored = True
+    # index = 0
+    # latestDate = datetime.datetime.now()
+    # notConfirmed = True
+    # stockToSell = "AAPL"
+
+    # while (notConfirmed):
+    #     stockToSell = input("Enter the code for the stock you want to sell: ")
+    #     if (stockToSell != ""):
+    #         confirmationDecision = input("Are you sure you want to sell " + stockToSell + " stock? (Y/N) ")
+    #         if (confirmationDecision == "Y"):
+    #             notConfirmed = False
+
+    # ## Do a for each loop where we do a try catch around this for each loop, increasing the number of days that we are taking away from now until the for each succeeds
+    # while (errored):
+    #     if index != 0:
+    #         latestDate = datetime.datetime.now() - datetime.timedelta(days=index)
+    #     try:
+    #         print(latestDate.strftime("%Y-%m-%d"))
+    #         for a in CLIENT.list_aggs(ticker=stockToSell, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=5000):
+    #             print(a)
+    #             print("Time: " + datetime.datetime.fromtimestamp(a.timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"))
+    #             aggs.append(a)
+    #         errored = False
+    #     except:
+    #         errored = True
+    #         index += 1
+    # print("Last Price: " + str(aggs[-1].high) + " - " + str(aggs[-1].low) + " GBP at " + datetime.datetime.fromtimestamp(aggs[-1].timestamp/1000).strftime("%d/%m/%Y %H:%M:%S"));
+    # hasStock = input("Do you want to sell? (Y/N) ")
+    # if (hasStock == "Y"):
+    #     amountToGain = 0
+    #     stockAmount = input("How much stock (in Units) do you have? ")
+    #     sellAmount = input("How much stock (in Units) do you want to sell, enter 'ALL' if you want to sell all the stock? ")
+    #     difference = aggs[-1].high - aggs[-1].low
+    #     sellValue = round(aggs[-1].low + (difference / 2), 2)
+    #     if (sellAmount.upper() == 'ALL'):
+    #         print("All selected")
+    #         print("Amount recieved after selling: " + str(round(sellValue * float(stockAmount), 2)) + "(GBP)")
+    #         amountToGain = round(sellValue * float(stockAmount), 2)
+    #     else:
+    #         print("All not selected")
+    #         print("Amount recieved after selling: " + str(round(sellValue * float(sellAmount), 2)) + "(GBP)")
+    #         print("Amount of units left after selling: " + str(float(stockAmount) - float(sellAmount)) + " Units")
+    #         amountToGain = round(sellValue * float(sellAmount), 2)
+    
+    #     convertLoop = True;
+    #     while (convertLoop):
+    #         doConvert = input("Would you like to convert the amount into a different currency? (Y/N)");
+    #         if (doConvert == "Y"):
+    #             convertedAmount = convertToCurrency(amountToGain);
+    #             if (convertedAmount == "Invalid currency code"):
+    #                 print ("Could not convert, due to invalid currency code");
+    #             elif (convertedAmount == "Could not find the date of the last currency conversion"):
+    #                 print("Could not convert, due to the invalid currency conversion");
+    #             else:
+    #                 print("After conversion: " + convertedAmount + " .");
+    #                 convertLoop = False;
+    #         elif (doConvert == "N"):
+    #             convertLoop = False;
+    #     main()
+    # else:
+    #     main()
 
 
 
    
         
         
-def convertToCurrency(amountToGain):
+def convertToCurrency(amountToGain, userCurrencyCode):
     """
     Asks the user what currency they want to convert to                
     Converts to that currency using API to get current values and returns                
     """                
-    userCurrencyCode = input("Please enter the three letter currency code: ");                
-    userCurrencyCode = userCurrencyCode.upper();                
+    # userCurrencyCode = input("Please enter the three letter currency code: ");                
+    # userCurrencyCode = userCurrencyCode.upper();
     if (userCurrencyCode in c.currencies):
         errored = True
         index = 0;
