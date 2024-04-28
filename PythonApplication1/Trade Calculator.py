@@ -340,7 +340,9 @@ def calculateData(data, stock):
     changeStockBtn.setFixedSize(250, 40);
     
     #Create GUI graph
+    pyqtgraph.setConfigOption("leftButtonPan", False);
     stockGraph = pyqtgraph.PlotWidget();
+
     
     #Calculate the averages and plot them on a graph
     data.sort(key=sortByTimestamp)
@@ -395,13 +397,15 @@ def calculateData(data, stock):
     stockGraph.plot(list(datesdict.keys()), averages, pen=pen, labels=valueDateList, symbol='o', symbolSize=10, symbolBrush='k');
     
     stockGraph.plot(list(datesdict.keys()), lowest, pen=pen, labels=valueDateList, symbol='arrow_down', symbolSize=30, symbolBrush='r');
-    
+        
     stockGraph.setLabel("left", "Value (p)");
     stockGraph.setLabel("bottom", "Date");
     stockGraph.setYRange(lowestLow, highestHigh);
     stockGraph.setXRange(lowestDate, highestDate);
     xDatesAxis = stockGraph.getAxis("bottom");
     xDatesAxis.setTicks([valueDateList]);
+    
+    stockGraph.enableMouse(False);
     
     #Add all widgets to their respective layouts
     titleLayout.addWidget(backBtn);
