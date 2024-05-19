@@ -1,7 +1,7 @@
 from token import NUMBER
 from polygon import RESTClient
 from currency_converter import CurrencyConverter
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit, QComboBox
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QDateEdit, QComboBox, QCheckBox
 from PyQt6.QtCore import Qt, QDateTime, QEvent
 from PyQt6.QtGui import QFont
 import pyqtgraph
@@ -100,7 +100,6 @@ def getData():
         tickers.append(a.ticker);
         tickerNames.append(a.name);
         count = count + 1;
-        print(str(count) + ": " + a.name + " (" + a.ticker + ")");
         if (count == 5000):
             break;
         
@@ -650,7 +649,6 @@ def selling():
         tickers.append(a.ticker);
         tickerNames.append(a.name);
         count = count + 1;
-        print(str(count) + ": " + a.name + " (" + a.ticker + ")");
         if (count == 5000):
             break;   
     
@@ -689,6 +687,12 @@ def selling():
     sellingByOptionLabel.setFont(QFont("Futura", 15, 8));
     sellingByOptionLabel.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight);
     sellingByOptionLabel.setFixedSize(80, 40);
+    
+    sellingOptionOne = QCheckBox("Amount (£)");
+    sellingOptionOne.setFixedSize(60, 20);
+    
+    sellingOptionTwo = QCheckBox("Quantity")
+    sellingOptionTwo.setFixedSize(60, 20);
     
     sellingAmountLabel = QLabel("Amount:");
     sellingAmountLabel.setFont(QFont("Futura", 15, 8));
@@ -729,9 +733,16 @@ def selling():
     stockBox = QComboBox();
     stockBox.setFixedSize(600, 40);
     
+    print(tickerNames);
+    print(tickers);
     tickCount = 0;
-    for a in tickers:
-        stockBox.addItem(tickerNames[tickCount] + "(" + a + ")");
+    for b in tickers:
+        print(tickerNames[tickCount]);
+        print(b);
+        print("//////////////////////////////////")
+        if (isinstance(tickerNames[tickCount], str)):
+            stockBox.addItem((tickerNames[tickCount]) + "(" + b + ")");
+            
         tickCount = tickCount + 1;
         
     #Add all widgets to their respective layouts
@@ -742,7 +753,8 @@ def selling():
     lastestPriceLayout.addWidget(latestPriceLabel);
     lastestPriceLayout.addWidget(latestPrice);
     sellingByOptionLayout.addWidget(sellingByOptionLabel);
-    
+    sellingByOptionLayout.addWidget(sellingOptionOne);
+    sellingByOptionLayout.addWidget(sellingOptionTwo);
     sellingAmountLayout.addWidget(sellingAmountLabel);
     sellingAmountLayout.addWidget(sellingAmount);
     sellingOutputLayout.addWidget(sellingAmountLeftLabel);
@@ -788,7 +800,7 @@ def selling():
         sellingWindow.close();
         main();
     
-    def stockChosen():
+    def sellingStockChosen():
         #Reset the aggs
         global aggs
         aggs = [];
@@ -798,18 +810,12 @@ def selling():
         stockNameAndCode = stockBox.currentText();
         stockCode = stockNameAndCode.split("(")[1];
         stockCode = stockCode.split(")")[0];
-        print("Chosen stock code: " + stockCode);
-        print("Start Date: " + str(startDateInput));
-        print("End Date: " + str(endDateInput));
-        print("Formatted Start Date: " + startDateInput.toString("yyyy-MM-dd"));
-        print("Formatted End Date: " + endDateInput.toString("yyyy-MM-dd"));
-        #print("Formatted Start Date: " + startDateInput.strftime("%Y-%m-%d"));
-        #print("Formatted End Date: " + endDateInput.strftime("%Y-%m-%d"));
         highest = dailyData()
         highest.high = 0
         lowest = dailyData()
         lowest.low = 100000
-        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=1, timespan="day", from_=startDateInput.toString("yyyy-MM-dd"), to=endDateInput.toString("yyyy-MM-dd"), limit=50000):
+        latestDate = datetime.datetime.now()
+        for a in CLIENT.list_aggs(ticker=stockCode, multiplier=10, timespan="minute", from_=latestDate.strftime("%Y-%m-%d"), to=latestDate.strftime("%Y-%m-%d"), limit=100):
             print(a);
             aggs.append(a);
             if (a.high > highest.high):
@@ -824,9 +830,9 @@ def selling():
     #Calls for when buttons are clicked
     backBtn.clicked.connect(backBtnClicked);
     
-    stockBox.currentIndexChanged.connect(stockChosen);
+    stockBox.currentIndexChanged.connect(sellingStockChosen);
     
-    stockChosen();
+    # sellingStockChosen();
     
     sellingWindow.show();
     # sellingWindow = QMainWindow();
